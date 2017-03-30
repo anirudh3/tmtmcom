@@ -1,0 +1,95 @@
+{% extends "chatbot/index.html" %}
+
+{% block writing %}
+<div class="jumbotron col-lg">
+    <h5 class="display-1">Chat with Botto!</h5>
+
+    {% for error in errors %}
+    <div class="col-xs-12" style="height:10px;"></div>
+    <div class="error col-md-12">
+        {{error}}
+    </div>
+    {% endfor %}
+    <div class="col-xs-12" style="height: 20px;"></div>
+        <div class="panel panel-info">
+            <div class="panel-heading"> Ask about music:</div>
+            <div class="panel-body">
+                
+                <div class="media">
+                    <img class="d-flex mr-3 img-rounded" width="64px" height="64px" src="../../static/img/egg.png" alt="egg.png">
+                    <div class="media-body">
+                        <h5 class="mt-0">Botto</h5>
+                        Welcome to Talk Music To Me! Tell me, what would you like to know about music?
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="media">
+                    <img class="d-flex mr-3 img-rounded" width="64px" height="64px" src="../../static/img/egg.png" alt="egg.png">
+                    <div class="media-body">
+                        <h5 class="mt-0">Garrett</h5>
+                        I really want to find music that makes me want to drink bleach.
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="media">
+                    <img class="d-flex mr-3 img-rounded" width="64px" height="64px" src="../../static/img/egg.png" alt="egg.png">
+                    <div class="media-body">
+                        <h5 class="mt-0">Botto</h5>
+                        Have you ever heard of One Direction, Nickelback, or Smash Mouth?
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="media">
+                    <img class="d-flex mr-3 img-rounded" width="64px" height="64px" src="../../static/img/egg.png" alt="egg.png">
+                    <div class="media-body">
+                        <h5 class="mt-0">Garrett</h5>
+                        Tell me more about Smash Mouth.
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="media">
+                    <img class="d-flex mr-3 img-rounded" width="64px" height="64px" src="../../static/img/egg.png" alt="egg.png">
+                    <div class="media-body">
+                        <h5 class="mt-0">Botto</h5>
+                       Smash Mouth is an American rock band from San Jose, California. The band was formed in 1994, and was originally composed of Steve Harwell (vocals), Kevin Coleman (drums), Greg Camp (guitar), and Paul De Lisle (bass). They are known for songs such as "Walkin' on the Sun" (1997), "All Star" (1999), and a cover of The Monkees' "I'm a Believer" (2001), the latter two of which were featured on the soundtrack for the animated film Shrek.
+
+                        The band adopted retro styles covering several decades of popular music. They have also performed numerous covers of popular songs, including War's "Why Can't We Be Friends?", Simple Minds' "Don't You (Forget About Me)", Question Mark & the Mysterians's "Can't Get Enough of You Baby", The Beatles' "Getting Better", and Disney's "I Wan'na Be Like You".
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+
+        <form class="add-form col-md-12" action="" method="post">
+            <div class="row">
+                <div class="input-group input-group-lg col-md-10">
+                    {{ postform}}
+                    <input type="text" name="item" autofocus class="form-control" placeholder="Thoughts" aria-describedby="sizing-addon1" maxlength="160">
+                </div>
+                <div class="input-group input-group-lg col-md-2">
+                    <input class="btn btn-outline-primary" type="submit" text="Add item">
+                </div>
+                {% csrf_token %}
+            </div>
+        </form>
+
+    </div>
+{% endblock %}
+
+<!-- {% block posts %}
+<div class="row marketing">
+        <div class="col-lg-10">
+            <ol id="post-feed">
+            </ol>
+        </div>
+      </div>
+{% endblock %} -->

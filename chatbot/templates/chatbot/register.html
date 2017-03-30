@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <title>Register</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+
+</head>
+
+<body>
+
+    <div class="container body-content">
+        <div class="row">
+        
+        
+            <div class="jumbotron col-sm" style="height: 20px">
+                {% for error in errors %}
+                <p class="text-center" style="color:red">
+                    {{ error }}
+                </p>
+                <div class="col-xs-12" style="height: 1px;"></div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+       
+        <form id='register' role="form" method="POST" class="form-signin" action="{% url 'register' %}">
+            <h2 class="form-signin-heading">Please register</h2>
+            {{ form }}
+            <div class="form-group">
+                <input class="btn btn-lg btn-outline-primary btn-block" type="submit" value="Register"/>
+                {% csrf_token %}
+            </div>
+        </form>
+
+
+    </div> <!-- /container -->
+
+</body>
+</html>
+
