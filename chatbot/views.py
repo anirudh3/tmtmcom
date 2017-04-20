@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import login, authenticate
 from django.db import transaction
+from django.utils import timezone
 
 # Decorator to use built-in authentication system
 from django.contrib.auth.decorators import login_required
@@ -36,20 +37,83 @@ import datetime
 # Import JSON
 import json
 
+# Import requests
+import requests
+
 # Used to generate a one-time-use token to verify a user's email address
 from django.contrib.auth.tokens import default_token_generator
 
 # Used to send mail from within Django
 from django.core.mail import send_mail
 
+#Setup Spotipy Account - in terminal
+
+# __init__(auth=, cleint_credentials
+# export SPOTIPY_CLIENT_ID='ba6790bdcd434f06b7b577e344c6e0ae'
+# export SPOTIPY_CLIENT_SECRET='145715e565ff48469c306484896a34f5'
+# export SPOTIPY_REDIRECT_URI='http://localhost:8888/callback'
+
+import sys
+import spotipy
+import spotipy.util as util
+import base64
+import urllib
+import urllib2
+
+state_key = 'GZ2TPEFHXMB4'
+
+def spotify_callback(request):
+    return render(request, 'chatbot/spotify_loggedin.html', {})
+
+# Action for loggin in step and giving a greeting.
+@login_required()
+def login_step(request):
+
+    errors = []
+
+    #  Trying to get the login form here...
+    if request.method == 'POST':
+        print("we at least got a post")
+
+
+    new_mess = Mess(text="Hello there! Welcome to Talk Music To Me! My name is Botto. How can I help you find something to listen to today?",
+                    user=request.user,
+                    created=timezone.now(),
+                    reality_coefficient=False
+                    )
+    new_mess.save()
+
+    # Deletes the user's Spotify token so we will auto-update it upon getting to the chat page
+    try:
+        chatter = Chatters.objects.get(name = str(request.user.username))
+        chatter.spotify_auth = '0'
+        chatter.save()
+    except ObjectDoesNotExist:
+        errors.append('The profile does not exist.')
+
+    return redirect(reverse('chat'))
+
+# Action for responding to something the user says
+@login_required()
+def respond_chat(request):
+
+    new_mess = Mess(text="Response template.",
+                    user=request.user,
+                    created=timezone.now(),
+                    reality_coefficient=False
+                    )
+    new_mess.save()
+    mess = Mess.objects.all()
+    response_text = serializers.serialize('json', Mess.objects.all())
+    return HttpResponse(response_text, content_type='application/json')
+
 # Action for the default /chatbot/ route.
 @login_required()
 # @ensure_csrf_cookie
 def home(request):
-    # Gets a list of all the posts in the database.
-    # all_items = Item.objects.all()
-    # all_comments = Comment.objects.all()
-    # context = {'postform': AddForm(), 'posts': all_items, 'commentform': AddComment(), 'comments': all_comments}
+    # Gets a list of all the messages in the database.
+    all_mess = Mess.objects.all()
+    context = {'mess': all_mess}
     return render(request, 'chatbot/build_chat.html')
 
 
@@ -155,7 +219,8 @@ def confirm_registration(request, username, token):
 
 # Action for sending to the email sent page
 def needs_confirmation(request):
-    return render(request, 'socialnetwork/needs-confirmation.html', {})
+    return render(request, 'chatbot/needs-confirmation.html', {})
+
 
 # Action for editing the user's profile
 @login_required
@@ -194,6 +259,89 @@ def edit(request):
     context = {'chatter': chatter, 'errors': errors, 'form': EditForm(), 'cuser': curr_user}
     return render(request, 'chatbot/build_settings.html', context)
 
+# Action for adding a message to the chat.
+@login_required
+def add_chat(request):
+
+    errors = []
+
+    if not 'item' in request.POST or not request.POST['item']:
+        message = 'You must enter an item to add.'
+        json_error = '{ "error": "'+message+'" }'
+        return HttpResponse(json_error, content_type='application/json')
+
+    new_mess = Mess(text=request.POST['item'],
+                    user=request.user,
+                    created=datetime.datetime.now(),
+                    reality_coefficient=True
+                    )
+    new_mess.save()
+    mess = Mess.objects.all()
+    response_text = serializers.serialize('json', Mess.objects.all())
+    return HttpResponse(response_text, content_type='application/json')
+
+# Action for adding the spotify authentication token
+@login_required
+def add_spotify_token(request):
+
+    errors = []
+
+    if not 'item' in request.POST or not request.POST['item']:
+        message = 'No token was received.'
+        json_error = '{ "error": "'+message+'" }'
+        return HttpResponse(json_error, content_type='application/json')
+
+    chatter = Chatters.objects.get(name = str(request.user.username))
+    chatter.spotify_auth = request.POST['item']
+    chatter.save()
+
+    mess = Mess.objects.all()
+    response_text = serializers.serialize('json', Mess.objects.all())
+    return HttpResponse(response_text, content_type='application/json')
+
+# Action for the /socialnetwork/add-item route.
+@login_required
+def add_explore(request):
+
+    errors = []
+
+    if not 'item' in request.POST or not request.POST['item']:
+        message = 'You must enter an item to add.'
+        json_error = '{ "error": "'+message+'" }'
+        return HttpResponse(json_error, content_type='application/json')
+
+    stringout = str(request.POST['item'])
+    string1 = stringout.split('%', 1)
+
+    searchparam =  string1[1]
+    searchval = string1[0]
+
+    if searchparam == "Artist":
+        search_artist(searchval)
+    elif searchparam == "Track":
+        search_track(searchval)
+    elif searchparam == "Genre":
+        search_genre(request, searchval)
+    elif searchparam == "Playlist":
+        search_playlist(searchval)
+    else:
+        print("Failure")
+
+    
+
+    # print(request.POST['select'])
+
+    # new_mess = Mess(text=request.POST['item'],
+    #                 user=request.user,
+    #                 created=datetime.datetime.now(),
+    #                 reality_coefficient=True
+    #                 )
+    # new_mess.save()
+    # mess = Mess.objects.all()
+
+    response_text = serializers.serialize('json', ArtistRes.objects.all())
+    return HttpResponse(response_text, content_type='application/json')
+
 
 # Action for changing the photo
 @login_required
@@ -215,4 +363,356 @@ def upload_pic(request, user_id):
             errors.append('Image was not valid.')
 
     return redirect(reverse('profile'), context)
+
+# Action for logging out and deleting all messages for that particular user
+@login_required
+def logout_step(request):
+
+    guy = User.objects.get(username__iexact = str(request.user.username))
+    Mess.objects.filter(user=guy).delete()
+
+    return redirect(reverse('logout'))
+
+# Action for using Ajax to automatically update chat content
+@login_required
+def get_list_json(request):
+    guy1 = serializers.serialize('json', Mess.objects.all())
+    guy2 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
+    guys = {'mess': guy1, 'chatter': guy2}
+    out = json.dumps(guys)
+
+    return HttpResponse(out, content_type='application/json')
+
+# Action for using Ajax to automatically update search content
+@login_required
+def get_explore_json(request):
+    guy1 = serializers.serialize('json', SearchRes.objects.all())
+    guy2 = serializers.serialize('json', ArtistRes.objects.all())
+    guy4 = serializers.serialize('json', GenreRes.objects.all())
+    guy5 = serializers.serialize('json', PlaylistRes.objects.all())
+    guy3 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
+    guys = {'search': guy1, 'search_artist': guy2, 'chatter': guy3, 'search_genre': guy4, 'search_playlist': guy5}
+    out = json.dumps(guys)
+
+    return HttpResponse(out, content_type='application/json')
+
+# More ajax automatic serealization
+@login_required
+def get_list_xml(request):
+    response_text = serializers.serialize('xml', Mess.objects.all())
+    return HttpResponse(response_text, content_type='application/xml')
+
+@login_required
+def get_list_xml_template(request):
+    context = { 'mess': Mess.objects.all() }
+    return render(request, 'jquery_todolist/items.xml', context, content_type='application/xml')
+
+
+
+
+
+# Spotify Functions
+
+# Logging in the user business
+
+# token = util.prompt_for_user_token(username)
+
+# if token:
+#     sp = spotipy.Spotify(auth=token)
+#     playlists = sp.user_playlists(username)
+#     for playlist in playlists['items']:
+#         print(playlist['name'])
+# else:
+#     print("Can't get token for", username)
+
+# Searching for an artist
+# Returns : a JSON, comprising of albums by the arist, tracks, and
+# metadata for all of it. Finds the artist URI.
+def search_artist(search_str):
+
+    # Delete previous search objects
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+
+    sp = spotipy.Spotify()
+    result = sp.search(search_str, type='artist')  # result contains data in JSON format
+
+    num = len(result['artists']['items'])
+       
+    for item in result['artists']['items'][:num]:
+
+        if (len(item['images']) > 0):
+            imagelink = item['images'][0]['url']
+        else:
+            imagelink = '../../static/img/egg.png'
+
+        new_search = ArtistRes(artist=item['name'],
+                               uri = item['uri'],
+                               popularity = item['popularity'],
+                               img = imagelink,
+                               created = timezone.now()
+                               )
+        new_search.save()
+
+# Searching for an artist
+# Returns : a JSON, comprising of albums by the arist, tracks, and
+# metadata for all of it. Finds the artist URI.
+def search_track(search_str):
+
+    # Delete previous search objects
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
+
+    sp = spotipy.Spotify()
+    result = sp.search(search_str, type='track')  # result contains data in JSON format
+
+    # print json.dumps(result, indent=6, sort_keys=True)
+
+    num = len(result['tracks']['items'])
+       
+    for item in result['tracks']['items'][:num]:
+
+        if (len(item['album']['images']) > 0):
+            imagelink = item['album']['images'][0]['url']
+        else:
+            imagelink = '../../static/img/egg.png'
+
+        new_search = SearchRes(track=item['name'],
+                               artist=item['artists'][0]['name'],
+                               album=item['album']['name'],
+                               img=imagelink,
+                               created=timezone.now(),
+                               popularity = item['popularity'],
+                               uri=item['uri']
+                               )
+        new_search.save()
+
+# Searching for a playlist
+def search_playlist(search_str):
+
+    # Delete previous search objects
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
+
+    sp = spotipy.Spotify()
+    result = sp.search(search_str, type='playlist')
+
+    # print json.dumps(result, indent=6, sort_keys=True)
+
+    for item in result['playlists']['items']:
+        if (len(item['images']) > 0):
+            imagelink = item['images'][0]['url']
+        else:
+            imagelink = '../../static/img/egg.png'
+
+        ownerid = item['owner']['id']
+        ownerresult = sp.user(ownerid)
+
+        # print json.dumps(ownerresult, indent=6, sort_keys=True)
+
+        if(ownerresult['display_name']):
+            ownername = ownerresult['display_name']
+        else:
+            ownername = ownerresult['id']
+
+        new_search = PlaylistRes(playlist = item['name'],
+                                 img = imagelink,
+                                 owner = ownername,
+                                 ownerid = ownerresult['id'],
+                                 created = timezone.now(),
+                                 uri = item['uri'],
+                                 followers = ownerresult['followers']['total'],
+                                 trackcount = item['tracks']['total']
+                                )
+        new_search.save()
+
+# Searching for a genre
+def search_genre(request, search_str):
+
+    # Delete all previous search objects
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
+
+    chatter = Chatters.objects.get(name = str(request.user.username))
+
+    auth_token = chatter.spotify_auth
+
+    sp = spotipy.Spotify(auth=auth_token)
+    results = sp.recommendation_genre_seeds()
+
+    # print json.dumps(results, indent=6, sort_keys=True)
+    ind = []
+    i = 0;
+
+    for item in results['genres']:
+        if (item == search_str.lower()):
+            ind = i
+        i = i + 1
+
+    if (ind):
+        genre = str(results['genres'][ind])
+        results = sp.recommendations(seed_genres=[genre])
+        # print json.dumps(results, indent=6, sort_keys=True)
+
+        num = len(results['tracks'])
+       
+        for item in results['tracks'][:num]:
+
+            if (len(item['album']['images']) > 0):
+                imagelink = item['album']['images'][0]['url']
+            else:
+                imagelink = '../../static/img/egg.png'
+
+            new_search = ArtistRes(artist=item['artists'][0]['name'],
+                                   uri = item['artists'][0]['uri'],
+                                   popularity = item['popularity'],
+                                   img = imagelink,
+                                   created = timezone.now()
+                                   )
+            new_search.save()
+
+    else:
+        new_search = GenreRes(genre='Try one of these:',
+                              created = timezone.now()
+                              )
+        new_search.save()
+
+        for item in results['genres']:
+            new_search = GenreRes(genre=item,
+                                  created = timezone.now()
+                                  )
+            new_search.save()
+
+
+# View for calling search_genre through a link
+def search_artist_with_genre(request):
+    if not 'item' in request.POST or not request.POST['item']:
+        message = 'Must pass a genre to the Spotify API.'
+        json_error = '{ "error": "'+message+'" }'
+        return HttpResponse(json_error, content_type='application/json')
+
+    genre = str(request.POST['item'])
+
+    search_genre(request, genre)
+
+    response_text = serializers.serialize('json', GenreRes.objects.all())
+    return HttpResponse(response_text, content_type='application/json')
+
+
+# Top ten tracks for an artist
+def artist_top_ten(request):
+
+    if not 'item' in request.POST or not request.POST['item']:
+        message = 'Artist must have a URI to pass to the Spotify API.'
+        json_error = '{ "error": "'+message+'" }'
+        return HttpResponse(json_error, content_type='application/json')
+
+    uri = str(request.POST['item'])
+
+    # Delete previous search objects
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
+
+    spotify = spotipy.Spotify()
+    results = spotify.artist_top_tracks(uri)
+
+    # print json.dumps(results, indent=6, sort_keys=True) # Pretty Print
+
+    for track in results['tracks'][:10]:
+
+        if (len(track['album']['images']) > 0):
+            imagelink = track['album']['images'][0]['url']
+        else:
+            imagelink = '../../static/img/egg.png'
+
+        new_search = SearchRes(track=track['name'],
+                               artist=track['artists'][0]['name'],
+                               album=track['album']['name'],
+                               img=imagelink,
+                               created=timezone.now(),
+                               popularity = track['popularity'],
+                               uri=track['uri']
+                               )
+        new_search.save()
+
+    response_text = serializers.serialize('json', SearchRes.objects.all())
+    return HttpResponse(response_text, content_type='application/json')
+
+# Get the first 20 tracks in a playlist
+def get_playlist(request):
+
+    if not 'item' in request.POST or not request.POST['item']:
+        message = 'Playlist must have a URI to pass to the Spotify API.'
+        json_error = '{ "error": "'+message+'" }'
+        return HttpResponse(json_error, content_type='application/json')
+
+    stringout = str(request.POST['item'])
+    uri = stringout.split(':')[4]
+    userid = stringout.split(':')[2]
+
+    print("Get Playlist")
+    print("URI:")
+    print(uri)
+    print("User ID:")
+    print(userid)
+
+    # Delete previous search objects
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
+
+    chatter = Chatters.objects.get(name = str(request.user.username))
+    auth_token = chatter.spotify_auth
+
+    spotify = spotipy.Spotify(auth_token)
+    results = spotify.user_playlist(userid, uri)
+
+    # print json.dumps(results, indent=6, sort_keys=True) # Pretty Print
+
+    for track in results['tracks']['items'][:20]:
+
+        if (len(track['track']['album']['images']) > 0):
+            imagelink = track['track']['album']['images'][0]['url']
+        else:
+            imagelink = '../../static/img/egg.png'
+
+        new_search = SearchRes(track=track['track']['name'],
+                               artist=track['track']['artists'][0]['name'],
+                               album=track['track']['album']['name'],
+                               img=imagelink,
+                               created=timezone.now(),
+                               popularity = track['track']['popularity'],
+                               uri=track['track']['uri']
+                               )
+        new_search.save()
+
+    response_text = serializers.serialize('json', SearchRes.objects.all())
+    return HttpResponse(response_text, content_type='application/json')
+
+
+def get_track_info(self, tid):
+
+    start = time.time()
+    features = sp.audio_features(tid)
+    delta = time.time() - start
+    for feature in features:
+        print(json.dumps(feature, indent=4))
+        print()
+        analysis = sp._get(feature['analysis_url'])
+        print(json.dumps(analysis, indent=4))
+        print()
+    print ("features retrieved in %.2f seconds" % (delta,))
+
+
+
 

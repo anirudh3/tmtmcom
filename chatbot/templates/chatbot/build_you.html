@@ -2,7 +2,7 @@
 
 {% block writing %}
 <div class="jumbotron col-lg">
-    <h5 class="display-1">You!</h5>
+    <h2 class="display-4">You!</h2>
 
     {% for error in errors %}
     <div class="col-xs-12" style="height:10px;"></div>
@@ -26,9 +26,14 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#tags" role="tab">Tags</a>
         </li>
+        <li class="btn">
+            <button class="btn btn-outline-secondary my-2 my-sm-0">
+                Button?
+            </button>
+        </li>
     </ul>
 
-    <!-- Tab panes -->
+    <!-- Tab panels -->
     <div class="tab-content">
         <div class="tab-pane fade show active panel panel-body" id="songs" role="tabpanel">
             <div class="table-container">

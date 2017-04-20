@@ -11,8 +11,14 @@ urlpatterns = [
     # Route for built-in authentication with our own custom login page.
     url(r'^login$', auth_views.login, {'template_name':'chatbot/login.html'}, name='login'),
 
+    # Route for adding a greeting message, then loggin in.
+    url(r'^login-step$', views.login_step, name="login-step"),
+
     # Route for logging out the user
     url(r'^logout$', auth_views.logout_then_login, name='logout'),
+
+    # Route for deleting all messages, then logging out
+    url(r'^logout-step$', views.logout_step, name='logout-step'),
 
     # Route to send user to a registration page
     url(r'^register$', views.register, name='register'),
@@ -44,29 +50,34 @@ urlpatterns = [
     # Route to upload an image
     url(r'^edit-pic/(?P<user_id>\w+)/$', views.upload_pic, name="uploadpic"),
 
-    # url(r'^add-item$', views.add_item, name='add-item'),
-    # # Parses number from URL and uses it as the item_id argument to the action
-    # url(r'^delete-item/(?P<item_id>\d+)$', views.delete_item, name='delete-item'),
-    # # Route for built-in authentication with our own custom login page
+    # Route to messaging to chatbot
+    url(r'^add-chat$', views.add_chat),
 
-    
-    
-    # # Route to view a user's posts
-    # url(r'^profile/(?P<user_id>\w+)/$', views.profile, name='profile'),
+    # Route to search with explore
+    url(r'^add-explore$', views.add_explore),
 
-    # # Route to view followed people
-    # url(r'^follow$', views.follow, name='follow'),
-    # # Route to add a follower
-    # url(r'^follow/(?P<user_id>\w+)/$', views.addfollow, name='addfollow'),
-    # # Route to del a follower
-    # url(r'^unfollow/(?P<user_id>\w+)/$', views.unfollow, name='unfollow'),
-    # # Route to adding a comment
-    # url(r'^add-comment/(?P<post_id>\w+)/$', views.add_comment, name='add-comment'),
-    # # JQuery URLS
-    # url(r'^get-list-json$', views.get_list_json, name='getlistjson'),
-    # url(r'^get-follow-list-json$', views.get_follow_list_json, name='getfollowlistjson'),
-    # url(r'^get-list-xml$', views.get_list_xml, name='getlistxml'),
-    # url(r'^get-list-xml-template$', views.get_list_xml_template, name='getlistxmltemp'),
-    # # The following URL should match any username valid in Django and
+    # Route to top ten artists
+    url(r'^artist-top-ten$', views.artist_top_ten),
+
+    # Route to tracks in a playlist
+    url(r'^get-playlist$', views.get_playlist),
+
+    # Route to get genre search results
+    url(r'^search-genre$', views.search_artist_with_genre),
+
+    # Route to respond by chatbot
+    url(r'^respond-chat$', views.respond_chat),
+
+    # Route to add the Spotify token to the user's model
+    url(r'^add-spotify-token$', views.add_spotify_token),
+
+    # Route to returning a spotify login
+    url(r'^callback$', views.spotify_callback),
+    
+    # JQuery URLS
+    url(r'^get-list-json$', views.get_list_json, name='getlistjson'),
+    url(r'^get-explore-json$', views.get_explore_json, name='getexplorejson'),
+    url(r'^get-list-xml$', views.get_list_xml, name='getlistxml'),
+    url(r'^get-list-xml-template$', views.get_list_xml_template, name='getlistxmltemp'),
 
 ]

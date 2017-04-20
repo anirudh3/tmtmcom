@@ -69,22 +69,22 @@ class RegistrationForm(forms.Form):
 #         fields = ['following']
 
 
-# class AddForm(forms.ModelForm):
-#     item = forms.CharField(max_length=160, label='', widget=forms.TextInput(attrs={'placeholder': 'Thoughts', 'class': 'form-control my-0', 'aria-describedby': 'sizing-addon1'}))
+class AddForm(forms.ModelForm):
+    item = forms.CharField(max_length=160, label='', widget=forms.TextInput(attrs={'placeholder': 'Thoughts', 'class': 'form-control my-0', 'aria-describedby': 'sizing-addon1'}))
 
-#     def clean(self):
-#         cleaned_data = super(AddForm, self).clean()
+    def clean(self):
+        cleaned_data = super(AddForm, self).clean()
 
-#         text = cleaned_data.get('item')
-#         if len(text) > 160:
-#             raise forms.ValidationError("Post is longer that 160 characters.")
+        text = cleaned_data.get('mess')
+        if len(text) > 160:
+            raise forms.ValidationError("Post is longer that 160 characters.")
 
-#         return cleaned_data
+        return cleaned_data
 
-#     class Meta:
-#         model = Item
-#         fields = ['item']
-#         exclude = ['text']
+    class Meta:
+        model = Mess
+        fields = ['item']
+        exclude = ['text']
 
 # class AddComment(forms.ModelForm):
 #     comment = forms.CharField(max_length=160, label='', widget=forms.TextInput(attrs={'placeholder': 'Comments', 'class': 'form-control my-0', 'aria-describedby': 'sizing-addon1'}))

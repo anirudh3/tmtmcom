@@ -1,0 +1,442 @@
+{
+      "playlists": {
+            "href": "https://api.spotify.com/v1/search?query=bread&type=playlist&offset=0&limit=10", 
+            "items": [
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/mofinporbread/playlist/2lesLYdUiAORCOhRdQcrTT"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/mofinporbread/playlists/2lesLYdUiAORCOhRdQcrTT", 
+                        "id": "2lesLYdUiAORCOhRdQcrTT", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/fe605dedffc5a738765dc8106048bb4f646b7725dabbbbdf1245dde35730619e18d39ecb7af20ed074397e42b8e6d97725b64e7b7fc61f9fe90680deb1c7e9781e24e3e68fe55b183aa92e7f873fff1c", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/fe605dedffc5a738765dc8106048bb4f646b7725dabbbbdf1245dde35730619e18d39ecb7af20ed074397e42b8e6d97725b64e7b7fc61f9fe90680deb1c7e9781e24e3e68fe55b183aa92e7f873fff1c", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/fe605dedffc5a738765dc8106048bb4f646b7725dabbbbdf1245dde35730619e18d39ecb7af20ed074397e42b8e6d97725b64e7b7fc61f9fe90680deb1c7e9781e24e3e68fe55b183aa92e7f873fff1c", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "BREAD", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/mofinporbread"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/mofinporbread", 
+                              "id": "mofinporbread", 
+                              "type": "user", 
+                              "uri": "spotify:user:mofinporbread"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "Mel2+BnV8hHm3TOEZtJpKIRK1cuXnk34ZiM2VP5JoH46L8dK3YjoApITGDnGQtfh", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/mofinporbread/playlists/2lesLYdUiAORCOhRdQcrTT/tracks", 
+                              "total": 179
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:mofinporbread:playlist:2lesLYdUiAORCOhRdQcrTT"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/1248369966/playlist/1YCPElzi7G9VmIXfqSg8Bj"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/1248369966/playlists/1YCPElzi7G9VmIXfqSg8Bj", 
+                        "id": "1YCPElzi7G9VmIXfqSg8Bj", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/a8fc709052a3411d2e96c345b281bb8c61d40e06fc8dae4bdaf8b2d104cc4a37e6d26954613036d07279e314f5462f2f510db4fe82d15b04f935b37a8c28de8f4aa5a3ec198119cf66d247c4a1385557", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/a8fc709052a3411d2e96c345b281bb8c61d40e06fc8dae4bdaf8b2d104cc4a37e6d26954613036d07279e314f5462f2f510db4fe82d15b04f935b37a8c28de8f4aa5a3ec198119cf66d247c4a1385557", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/a8fc709052a3411d2e96c345b281bb8c61d40e06fc8dae4bdaf8b2d104cc4a37e6d26954613036d07279e314f5462f2f510db4fe82d15b04f935b37a8c28de8f4aa5a3ec198119cf66d247c4a1385557", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "bread", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/1248369966"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/1248369966", 
+                              "id": "1248369966", 
+                              "type": "user", 
+                              "uri": "spotify:user:1248369966"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "VUJuAKHceX8jHLgqT6QNTbj0z07jq7jb2W9rnmEtw2zCnp6wTunaH+PCpe8REfhK", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/1248369966/playlists/1YCPElzi7G9VmIXfqSg8Bj/tracks", 
+                              "total": 17
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:1248369966:playlist:1YCPElzi7G9VmIXfqSg8Bj"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/anly1027/playlist/57Xkp1SXWpAF77senkQBWN"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/anly1027/playlists/57Xkp1SXWpAF77senkQBWN", 
+                        "id": "57Xkp1SXWpAF77senkQBWN", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/b3d079a2e81e76d5f4f7f570a91a54a1f09dd93db68b39fdc2409d0f526ad48775ddcd93ff496cdaa8b7e069b5e188d006091e57171b3402358a732ed6b0758fff1722697aedf4fac19448df8dbd40e5", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/b3d079a2e81e76d5f4f7f570a91a54a1f09dd93db68b39fdc2409d0f526ad48775ddcd93ff496cdaa8b7e069b5e188d006091e57171b3402358a732ed6b0758fff1722697aedf4fac19448df8dbd40e5", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/b3d079a2e81e76d5f4f7f570a91a54a1f09dd93db68b39fdc2409d0f526ad48775ddcd93ff496cdaa8b7e069b5e188d006091e57171b3402358a732ed6b0758fff1722697aedf4fac19448df8dbd40e5", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "Bread", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/anly1027"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/anly1027", 
+                              "id": "anly1027", 
+                              "type": "user", 
+                              "uri": "spotify:user:anly1027"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "GlE+QpDH/Teos2t6tzxxo9MvjeTuqlPyR5KoqpIF7Pn36ZLsJESrDr9vSLEOqveP", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/anly1027/playlists/57Xkp1SXWpAF77senkQBWN/tracks", 
+                              "total": 909
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:anly1027:playlist:57Xkp1SXWpAF77senkQBWN"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/12164495329/playlist/4UkHrDZRVZkILaUwwlgXTJ"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/12164495329/playlists/4UkHrDZRVZkILaUwwlgXTJ", 
+                        "id": "4UkHrDZRVZkILaUwwlgXTJ", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/5652ebc8c4b30c6b94f72f39874d39e47df14d2e97f243149d62836fbd688a7c6503d7aecd53876c8c6223950d623c835fc7c20daf524269f0c6a6652442264c9a8d3d51d5e9c59d92b4ef74bb8f17c2", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/5652ebc8c4b30c6b94f72f39874d39e47df14d2e97f243149d62836fbd688a7c6503d7aecd53876c8c6223950d623c835fc7c20daf524269f0c6a6652442264c9a8d3d51d5e9c59d92b4ef74bb8f17c2", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/5652ebc8c4b30c6b94f72f39874d39e47df14d2e97f243149d62836fbd688a7c6503d7aecd53876c8c6223950d623c835fc7c20daf524269f0c6a6652442264c9a8d3d51d5e9c59d92b4ef74bb8f17c2", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "Panera Bread", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/12164495329"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/12164495329", 
+                              "id": "12164495329", 
+                              "type": "user", 
+                              "uri": "spotify:user:12164495329"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "1qL8njoTk0AWNKQBMnyYxUquwEmnbakpshM4ML6FIPMr0Sv5W6V8EpW1NfPL2zME", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/12164495329/playlists/4UkHrDZRVZkILaUwwlgXTJ/tracks", 
+                              "total": 244
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:12164495329:playlist:4UkHrDZRVZkILaUwwlgXTJ"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/1249888507/playlist/5QQVd8whhFZanv0e8RCfPz"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/1249888507/playlists/5QQVd8whhFZanv0e8RCfPz", 
+                        "id": "5QQVd8whhFZanv0e8RCfPz", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/f3f994683e73ca0c0c9a7b910978388de387c9e860eadeef3cece161bd5a099ae63e059c4424251520d5141822450f1d4ff41163cd5844d2a1a55063bf98407d854fef37b735601e1b451c0841fa165d", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/f3f994683e73ca0c0c9a7b910978388de387c9e860eadeef3cece161bd5a099ae63e059c4424251520d5141822450f1d4ff41163cd5844d2a1a55063bf98407d854fef37b735601e1b451c0841fa165d", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/f3f994683e73ca0c0c9a7b910978388de387c9e860eadeef3cece161bd5a099ae63e059c4424251520d5141822450f1d4ff41163cd5844d2a1a55063bf98407d854fef37b735601e1b451c0841fa165d", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "Bread, Carpenters, Anne Murray, Carol King", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/1249888507"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/1249888507", 
+                              "id": "1249888507", 
+                              "type": "user", 
+                              "uri": "spotify:user:1249888507"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "AUn9joyxB3a2G2rYBDYAmYqSQaS2QIdSNToSfOzh3e9NreuZY08OOxBgysJX40UW", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/1249888507/playlists/5QQVd8whhFZanv0e8RCfPz/tracks", 
+                              "total": 68
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:1249888507:playlist:5QQVd8whhFZanv0e8RCfPz"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/haylster96/playlist/0vYD3M4ON36qQXizAU3hnV"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/haylster96/playlists/0vYD3M4ON36qQXizAU3hnV", 
+                        "id": "0vYD3M4ON36qQXizAU3hnV", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/d2d573695a26ac532495faba538499f180ce3d364da5a5832fd03cc2795ec45727f2c96ffd849a7a89f7d57dadc93fc48f6417fb0f14d26b403a65f55fc80c7eac1d996626a0266c13cd55bef33412c0", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/d2d573695a26ac532495faba538499f180ce3d364da5a5832fd03cc2795ec45727f2c96ffd849a7a89f7d57dadc93fc48f6417fb0f14d26b403a65f55fc80c7eac1d996626a0266c13cd55bef33412c0", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/d2d573695a26ac532495faba538499f180ce3d364da5a5832fd03cc2795ec45727f2c96ffd849a7a89f7d57dadc93fc48f6417fb0f14d26b403a65f55fc80c7eac1d996626a0266c13cd55bef33412c0", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "bread faced banana", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/haylster96"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/haylster96", 
+                              "id": "haylster96", 
+                              "type": "user", 
+                              "uri": "spotify:user:haylster96"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "3PHP4KDMW2BwAg7QQZsRBEf939TXhMMoWjH8dbh5jbwNC4PyzYU+OF65Rg2hI0N7", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/haylster96/playlists/0vYD3M4ON36qQXizAU3hnV/tracks", 
+                              "total": 320
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:haylster96:playlist:0vYD3M4ON36qQXizAU3hnV"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/resprela/playlist/1PNgwAJQdB5YFOfj78zdTd"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/resprela/playlists/1PNgwAJQdB5YFOfj78zdTd", 
+                        "id": "1PNgwAJQdB5YFOfj78zdTd", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/2458cf5e9d44531256a5ff925dafb7ddcd8adfc084d815efbd579df46bca3b88054f1a11af5e8919ccad8ba7029af611911b55412c0268775f030a0413b116afa0e8e34f889f07b6c8f3841ae1849da6", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/2458cf5e9d44531256a5ff925dafb7ddcd8adfc084d815efbd579df46bca3b88054f1a11af5e8919ccad8ba7029af611911b55412c0268775f030a0413b116afa0e8e34f889f07b6c8f3841ae1849da6", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/2458cf5e9d44531256a5ff925dafb7ddcd8adfc084d815efbd579df46bca3b88054f1a11af5e8919ccad8ba7029af611911b55412c0268775f030a0413b116afa0e8e34f889f07b6c8f3841ae1849da6", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "Bread, England Dan and John Ford Coley", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/resprela"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/resprela", 
+                              "id": "resprela", 
+                              "type": "user", 
+                              "uri": "spotify:user:resprela"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "F88MgrtBFm9os5UmaZbLMwbChCk8xwBTqPrRDDljCa5LMeT8xSjXYzFicGMRGl0z", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/resprela/playlists/1PNgwAJQdB5YFOfj78zdTd/tracks", 
+                              "total": 69
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:resprela:playlist:1PNgwAJQdB5YFOfj78zdTd"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/tung.phan97/playlist/4qDPZkKzbK2PGFzx0K2Fjp"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/tung.phan97/playlists/4qDPZkKzbK2PGFzx0K2Fjp", 
+                        "id": "4qDPZkKzbK2PGFzx0K2Fjp", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/951996bfa8083b0fa26a960ffcb2cb1d3682dd597c55078ac93a19156ecf170acc4f3048822c8ac886bf652653741f6a73724fdd128486e5c66d4d221870e3c0e5abc4a58cfbfb8aeaf3b6a57b88eb87", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/951996bfa8083b0fa26a960ffcb2cb1d3682dd597c55078ac93a19156ecf170acc4f3048822c8ac886bf652653741f6a73724fdd128486e5c66d4d221870e3c0e5abc4a58cfbfb8aeaf3b6a57b88eb87", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/951996bfa8083b0fa26a960ffcb2cb1d3682dd597c55078ac93a19156ecf170acc4f3048822c8ac886bf652653741f6a73724fdd128486e5c66d4d221870e3c0e5abc4a58cfbfb8aeaf3b6a57b88eb87", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "bread", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/tung.phan97"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/tung.phan97", 
+                              "id": "tung.phan97", 
+                              "type": "user", 
+                              "uri": "spotify:user:tung.phan97"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "8s2VZhq/cDnDZ4z+tSnniO2TyNE1XHgB5cpG/5kzg5eMq61tNE6BSkVsh4wkHQBo", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/tung.phan97/playlists/4qDPZkKzbK2PGFzx0K2Fjp/tracks", 
+                              "total": 185
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:tung.phan97:playlist:4qDPZkKzbK2PGFzx0K2Fjp"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/1277811792/playlist/2cZWgEA2qMKpMF9y7R1ZUz"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/1277811792/playlists/2cZWgEA2qMKpMF9y7R1ZUz", 
+                        "id": "2cZWgEA2qMKpMF9y7R1ZUz", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/f3f994683e73ca0c0c9a7b910978388de387c9e855f7b64d4d84685b8c33e7414e6a618fb4b97537557a6058e3de72bf37ffcd2c12dd5932276df344413b2b6f4398ff5c17a1f70743723d0b2388f695", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/f3f994683e73ca0c0c9a7b910978388de387c9e855f7b64d4d84685b8c33e7414e6a618fb4b97537557a6058e3de72bf37ffcd2c12dd5932276df344413b2b6f4398ff5c17a1f70743723d0b2388f695", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/f3f994683e73ca0c0c9a7b910978388de387c9e855f7b64d4d84685b8c33e7414e6a618fb4b97537557a6058e3de72bf37ffcd2c12dd5932276df344413b2b6f4398ff5c17a1f70743723d0b2388f695", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "If \u2013 Bread", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/1277811792"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/1277811792", 
+                              "id": "1277811792", 
+                              "type": "user", 
+                              "uri": "spotify:user:1277811792"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "Vdtb/H0gy/+Q6+Ty31QuXLlruIDGCgLOXP2+PElvhEiwf6FNURDd5jxhQHB/WSzX", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/1277811792/playlists/2cZWgEA2qMKpMF9y7R1ZUz/tracks", 
+                              "total": 84
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:1277811792:playlist:2cZWgEA2qMKpMF9y7R1ZUz"
+                  }, 
+                  {
+                        "collaborative": false, 
+                        "external_urls": {
+                              "spotify": "http://open.spotify.com/user/1277068621/playlist/5VcL9CoFyYstpi9uI51nZX"
+                        }, 
+                        "href": "https://api.spotify.com/v1/users/1277068621/playlists/5VcL9CoFyYstpi9uI51nZX", 
+                        "id": "5VcL9CoFyYstpi9uI51nZX", 
+                        "images": [
+                              {
+                                    "height": 640, 
+                                    "url": "https://mosaic.scdn.co/640/279d477c31ca06eb46c808289069209e1bad2564371a0ec1a302663c7f768a5a197ce4ff416fa4bad26e604baaa16a1f8cf04fc48f66a3965dce915ba9ccdf1faa41f432cb081579bea9afe0e577b523", 
+                                    "width": 640
+                              }, 
+                              {
+                                    "height": 300, 
+                                    "url": "https://mosaic.scdn.co/300/279d477c31ca06eb46c808289069209e1bad2564371a0ec1a302663c7f768a5a197ce4ff416fa4bad26e604baaa16a1f8cf04fc48f66a3965dce915ba9ccdf1faa41f432cb081579bea9afe0e577b523", 
+                                    "width": 300
+                              }, 
+                              {
+                                    "height": 60, 
+                                    "url": "https://mosaic.scdn.co/60/279d477c31ca06eb46c808289069209e1bad2564371a0ec1a302663c7f768a5a197ce4ff416fa4bad26e604baaa16a1f8cf04fc48f66a3965dce915ba9ccdf1faa41f432cb081579bea9afe0e577b523", 
+                                    "width": 60
+                              }
+                        ], 
+                        "name": "Bread", 
+                        "owner": {
+                              "external_urls": {
+                                    "spotify": "http://open.spotify.com/user/1277068621"
+                              }, 
+                              "href": "https://api.spotify.com/v1/users/1277068621", 
+                              "id": "1277068621", 
+                              "type": "user", 
+                              "uri": "spotify:user:1277068621"
+                        }, 
+                        "public": null, 
+                        "snapshot_id": "urQcYsIZEc8Pxc4ZrW+pj/OGt2vy8LWUWSy6iDXq1HaIO/O+oiKMHojb7da6Lkuj", 
+                        "tracks": {
+                              "href": "https://api.spotify.com/v1/users/1277068621/playlists/5VcL9CoFyYstpi9uI51nZX/tracks", 
+                              "total": 233
+                        }, 
+                        "type": "playlist", 
+                        "uri": "spotify:user:1277068621:playlist:5VcL9CoFyYstpi9uI51nZX"
+                  }
+            ], 
+            "limit": 10, 
+            "next": "https://api.spotify.com/v1/search?query=bread&type=playlist&offset=10&limit=10", 
+            "offset": 0, 
+            "previous": null, 
+            "total": 262
+      }
+}
