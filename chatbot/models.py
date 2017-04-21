@@ -60,7 +60,11 @@ class Mess(models.Model):
         return 'id=' + str(self.id) + ',text="' + self.text + '"'
 
     class Meta:
+<<<<<<< HEAD
         ordering = ["created"]
+=======
+    	ordering = ["created"]
+>>>>>>> 836228dcc5e2a3c90ded793deb4299ab0a107e37
 
 # Data model for Search Track Returns
 class SearchRes(models.Model):

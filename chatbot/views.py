@@ -274,6 +274,7 @@ def add_chat(request):
     response_text = serializers.serialize('json', Mess.objects.all())
     return HttpResponse(response_text, content_type='application/json')
 
+<<<<<<< HEAD
 # Action for adding all the personal top information to the you tab
 @login_required
 def add_you(request):
@@ -345,6 +346,8 @@ def add_you(request):
     response_text = serializers.serialize('json', Mess.objects.all())
     return HttpResponse(response_text, content_type='application/json')
 
+=======
+>>>>>>> 836228dcc5e2a3c90ded793deb4299ab0a107e37
 # Action for adding the spotify authentication token
 @login_required
 def add_spotify_token(request):
@@ -461,6 +464,7 @@ def get_explore_json(request):
 
     return HttpResponse(out, content_type='application/json')
 
+<<<<<<< HEAD
 # Action for using Ajax to automatically update you content
 @login_required
 def get_you_json(request):
@@ -472,6 +476,8 @@ def get_you_json(request):
 
     return HttpResponse(out, content_type='application/json')
 
+=======
+>>>>>>> 836228dcc5e2a3c90ded793deb4299ab0a107e37
 # More ajax automatic serealization
 @login_required
 def get_list_xml(request):
@@ -510,8 +516,11 @@ def search_artist(search_str):
     SearchRes.objects.all().delete()
     ArtistRes.objects.all().delete()
     GenreRes.objects.all().delete()
+<<<<<<< HEAD
     PlaylistRes.objects.all().delete()
     
+=======
+>>>>>>> 836228dcc5e2a3c90ded793deb4299ab0a107e37
 
     sp = spotipy.Spotify()
     result = sp.search(search_str, type='artist')  # result contains data in JSON format

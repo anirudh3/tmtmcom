@@ -53,9 +53,12 @@ urlpatterns = [
     # Route to messaging to chatbot
     url(r'^add-chat$', views.add_chat),
 
+<<<<<<< HEAD
     # Route to update the you tab
     url(r'^add-you$', views.add_you),
 
+=======
+>>>>>>> 836228dcc5e2a3c90ded793deb4299ab0a107e37
     # Route to search with explore
     url(r'^add-explore$', views.add_explore),
 
@@ -80,7 +83,10 @@ urlpatterns = [
     # JQuery URLS
     url(r'^get-list-json$', views.get_list_json, name='getlistjson'),
     url(r'^get-explore-json$', views.get_explore_json, name='getexplorejson'),
+<<<<<<< HEAD
     url(r'^get-you-json$', views.get_you_json, name='getyoujson'),
+=======
+>>>>>>> 836228dcc5e2a3c90ded793deb4299ab0a107e37
     url(r'^get-list-xml$', views.get_list_xml, name='getlistxml'),
     url(r'^get-list-xml-template$', views.get_list_xml_template, name='getlistxmltemp'),
 
