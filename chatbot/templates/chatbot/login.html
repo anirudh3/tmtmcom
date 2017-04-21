@@ -9,33 +9,40 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/login.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="../../static/js/login.js?v=2" type="text/javascript"></script>
+
 
 </head>
 
 <body>
     <div class="container">
-                <div class="jumbotron">
-                    {% if form.errors %}
-                        <p class="text-center" style="color:red">
-                            Incorrect user name and password.
-                        </p>
-                    {% endif %}
-                </div>
+        <div class="jumbotron">
+            {% if form.errors %}
+                <p class="text-center" style="color:red">
+                    Incorrect user name and password.
+                </p>
+            {% endif %}
+        </div>
 
-                <form method="post" class="form-signin" action="{% url 'login' %}">
-                    <h2 class="form-signin-heading">Please log in</h2>
-                
-                    <input type="text" id="id_username" class="form-control" name="username" maxlength="254" placeholder="username" required autofocus>
-                    <div class="col-xs-12" style="height:5px;"></div>
-                    <input type="password" id="id_password" class="form-control" name="password" maxlength="254" placeholder="password" required>
-                    <div class="col-xs-12" style="height:15px;"></div>
-                    <input class="btn btn-lg btn-outline-primary btn-block" type="submit" value="Sign in"/>
-                    {% csrf_token %}
-                </form>
-                <form class="form-signin" action="/chatbot/register" method="GET">
-                    <button class="btn btn-lg btn-outline-success btn-block" type="submit">Register</button>
-                    {% csrf_token %}
-                </form>
+        <form id="logForm" method="post" action="{% url 'login' %}" class="form-signin">
+
+            <h2 class="form-signin-heading">Please log in</h2>
+        
+            <input type="text" id="id_username" class="form-control" name="username" maxlength="254" placeholder="username" required autofocus>
+            <div class="col-xs-12" style="height:5px;"></div>
+            <input type="password" id="id_password" class="form-control" name="password" maxlength="254" placeholder="password" required>
+            <div class="col-xs-12" style="height:15px;"></div>
+            <input class="btn btn-lg btn-outline-primary btn-block" type="submit" value="Sign in"/>
+            {% csrf_token %}
+        </form>
+        <form class="form-signin" action="/chatbot/register" method="GET">
+            <button class="btn btn-lg btn-outline-success btn-block" type="submit">Register</button>
+            {% csrf_token %}
+        </form>
+
 
     </div> <!-- /container -->
 

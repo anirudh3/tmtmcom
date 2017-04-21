@@ -20,6 +20,42 @@ label {
     padding-bottom: 20px;
 }
 
+.show-image {
+    position: relative;
+    /*margin: 5px;*/
+}
+
+.show-image:hover button{
+    display: block;
+}
+
+.hidden-button {
+    display: none;
+    position: absolute;
+    text-align: center;
+    margin-left: 7px;
+}
+
+.title-nopad {
+    padding-bottom: 0px;
+}
+
+.albumart {
+    padding-top: 25px;
+}
+
+.addpad20{
+    padding-bottom: 20px;
+}
+
+.addmargtop{
+    margin-top: 20px;
+}
+
+.subpad20{
+    padding-bottom: 0px;
+}
+
 .sub-title {
     font-size: xx-large;
     padding-top: 10px;
@@ -62,7 +98,7 @@ label {
 }
 .panel-body {
   padding: 15px;
-  height: 30rem;
+  height: 35rem;
   overflow-y: scroll;
 }
 .panel-heading {
@@ -387,5 +423,31 @@ label {
 .table-filter .media-meta {
   font-size: 11px;
   color: #999;
+}
+
+.spotify-embeds {
+  width: 100%;
+  padding: 50px;  
+}
+
+.spotify-embed {
+  background: #FFFFFF;
+  height: 80px;
+  
+  &:not(:last-of-type) {
+    margin-bottom: 5px;
+  }
+  
+  iframe {
+    display: block;
+    transition: opacity 0.125s;
+    .js & {
+      opacity: 0;
+      
+      &.loaded {
+        opacity: 1;
+      }
+    }
+  }
 }
 
