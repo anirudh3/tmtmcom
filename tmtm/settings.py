@@ -55,7 +55,7 @@ ROOT_URLCONF = 'tmtm.urls'
 
 # Used by the authentication system for URL required for login
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'login-step'
 
 TEMPLATES = [
     {
