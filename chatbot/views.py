@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
@@ -22,7 +20,16 @@ from django.contrib.auth import login, authenticate
 # from django.db import transaction
 
 # # Imports the Item class
-from chatbot.models import *
+# from chatbot.models import Item
+
+# # Imports the Posters class
+# from chatbot.models import Posters
+
+# # Import the Comments class
+# from chatbot.models import Comment
+
+# Import the Watson Bluemix Conversation API
+from watson_developer_cloud import ConversationV1
 
 # Imports the forms
 from chatbot.forms import *
@@ -58,6 +65,19 @@ import urllib2
 
 state_key = 'GZ2TPEFHXMB4'
 
+# setting up the conversation connection using our set up bot details
+conversation  = ConversationV1(
+    username = '8ab95a83-8ec0-41d9-9158-c21f11c8939b',
+    password = '5WqmrypF4ePz',
+    version='2016-09-20'
+)
+
+response = "" # Global variable for fetched responses from Watson
+inp = ""
+
+# workpace used in Bluemix
+workspace_id = '2bd01e24-6be9-4b60-8fad-387c383b5d7a'
+
 def spotify_callback(request):
     return render(request, 'chatbot/spotify_loggedin.html', {})
 
@@ -65,19 +85,34 @@ def spotify_callback(request):
 @login_required()
 def login_step(request):
 
+    print("login_step called")
+    global response
+
     errors = []
 
     #  Trying to get the login form here...
     if request.method == 'POST':
         print("we at least got a post")
 
+    # This is the deafult, welcoming message from Botto
+    response = conversation.message(workspace_id=workspace_id, message_input={
+        'text': ''})
 
-    new_mess = Mess(text="Hello there! Welcome to Talk Music To Me! My name is Botto. How can I help you find something to listen to today?",
+
+    # new_mess = Mess(text="Hello there! Welcome to Talk Music To Me! My name is Botto. How can I help you find something to listen to today?",
+    #                 user=request.user,
+    #                 created=timezone.now(),
+    #                 reality_coefficient=False
+    #                 )
+    new_mess = Mess(text=response['output']['text'][0],
                     user=request.user,
                     created=timezone.now(),
-                    reality_coefficient=False
+                    reality_coefficient=False,
+                    context = repr(response['context'])
                     )
     new_mess.save()
+
+
 
     # Deletes the user's Spotify token so we will auto-update it upon getting to the chat page
     try:
@@ -87,16 +122,36 @@ def login_step(request):
     except ObjectDoesNotExist:
         errors.append('The profile does not exist.')
 
-    return redirect(reverse('home'))
+    return redirect(reverse('chat'))
 
 # Action for responding to something the user says
 @login_required()
 def respond_chat(request):
 
-    new_mess = Mess(text="Response template.",
+    print("respond_chat got called")
+    global response
+
+    # Getting the last context for the concerned user
+    last_context = Mess.objects.filter(user = request.user).last().context
+    # print(last_context.last().created)
+
+    # Sending the message to the bot and fetching a response
+    response = conversation.message(workspace_id=workspace_id, message_input={
+        'text': inp}, context = eval(last_context))
+
+    # CHECK WHAT THE ACTION IS
+    # print(type(response['intents']))
+    # if(response['intents']['intent'][0] == "create_playlist"):
+        # print("USER WANTS A PLAYLIST MAN")
+
+
+
+
+    new_mess = Mess(text=response['output']['text'][0],
                     user=request.user,
                     created=timezone.now(),
-                    reality_coefficient=False
+                    reality_coefficient=False,
+                    context = repr(response['context'])
                     )
     new_mess.save()
     mess = Mess.objects.all()
@@ -107,9 +162,15 @@ def respond_chat(request):
 @login_required()
 # @ensure_csrf_cookie
 def home(request):
+    global response
+
+    print("TYPE OF RESPONSE")
+    print(type(response))
+
     # Gets a list of all the messages in the database.
-    context = {'form': EditForm()}
-    return render(request, 'chatbot/build_settings.html', context)
+    all_mess = Mess.objects.all()
+    context = {'mess': all_mess}
+    return render(request, 'chatbot/build_chat.html')
 
 
 # Action for registering a User@transaction.atomic
@@ -122,7 +183,7 @@ def register(request):
         context['form'] = RegistrationForm()
         return render(request, 'chatbot/register.html', context)
 
-    # Creates a bound form from the request POST parameters and makes the 
+    # Creates a bound form from the request POST parameters and makes the
     # form available in the request context dictionary.
     form = RegistrationForm(request.POST)
     context['form'] = form
@@ -132,7 +193,7 @@ def register(request):
         return render(request, 'chatbot/register.html', context)
 
     # At this point, the form data is valid.  Register and login the user.
-    new_user = User.objects.create_user(username=form.cleaned_data['username'], 
+    new_user = User.objects.create_user(username=form.cleaned_data['username'],
                                         password=form.cleaned_data['password1'],
                                         email=form.cleaned_data['email'],
                                         first_name=form.cleaned_data['first_name'],
@@ -144,11 +205,6 @@ def register(request):
     new_profile.username = new_user
     new_profile.save()
     new_profile.name = str(new_user)
-    new_profile.fname = new_user.first_name
-    new_profile.lname = new_user.last_name
-    new_profile.email = new_user.email
-    new_profile.save()
-    new_profile.location =form.cleaned_data['location']
     new_profile.save()
 
     # Generate a one-time use token and an email message body
@@ -159,7 +215,7 @@ Welcome to the music information website Talk Music To Me!  Please click the lin
 verify your email address and complete the registration of your account:
 
   http://%s%s
-""" % (request.get_host(), 
+""" % (request.get_host(),
        reverse('confirm', args=(new_user.username, token)))
 
     send_mail(subject="Verify your email address",
@@ -193,45 +249,14 @@ def settings(request):
     context = {}
     curr_user = request.user
 
-    # Just display the registration form if this is a GET request
-    if request.method == 'GET':
-        context = {'form': EditForm(), 'cuser': curr_user}
-        return render(request, 'chatbot/build_settings.html', context)
-
-    # Creates a bound form from the request POST parameters and makes the 
-    # form available in the request context dictionary.
-    form = EditForm(request.POST)
-    context['form'] = form
-
-    # Validates the form.
-    if not form.is_valid():
-        context = {'form': EditForm(), 'cuser': curr_user}
-        return render(request, 'chatbot/build_settings.html', context)
-
-        # Get the user information
+    # Get the user information
     try:
         chatter = Chatters.objects.get(name = str(request.user.username))
     except ObjectDoesNotExist:
         errors.append('The profile does not exist.')
 
-    # Form is valid!
-    if (len(form.cleaned_data['first_name']) > 0):
-        chatter.fname = form.cleaned_data['first_name']
-        chatter.save()
-    elif (len(form.cleaned_data['last_name']) > 0):
-        chatter.lname = form.cleaned_data['last_name']
-        chatter.save()
-    elif (len(form.cleaned_data['age']) > 0):
-        chatter.age = form.cleaned_data['age']
-        chatter.save()
-    elif (len(form.cleaned_data['email']) > 0):
-        chatter.email = form.cleaned_data['email']
-        chatter.save()
-    elif (len(form.cleaned_data['location']) > 0):
-        chatter.location = str(form.cleaned_data['location'])
-        chatter.save()
-
     context = {'chatter': chatter, 'errors': errors, 'form': EditForm(), 'cuser': curr_user}
+
     return render(request, 'chatbot/build_settings.html', context)
 
 # Action for checkin if the user has successfully registered
@@ -272,14 +297,13 @@ def edit(request):
         context = {'chatter': chatter, 'errors': errors, 'form': EditForm(), 'cuser': curr_user}
         return redirect(reverse('settings'), context)
 
-    # Creates a bound form from the request POST parameters and makes the 
+    # Creates a bound form from the request POST parameters and makes the
     # form available in the request context dictionary.
     form = EditForm(request.POST)
     context['form'] = form
 
     if not form.is_valid():
         errors.append('Something you entered was not okay.')
-        context = {'form': EditForm(), 'cuser': curr_user}
         return render(request, 'chatbot/build_settings.html', context)
 
     # At this point, the form data is valid. Edit the user's information
@@ -294,7 +318,14 @@ def edit(request):
 # Action for adding a message to the chat.
 @login_required
 def add_chat(request):
+    global response
+    global inp
 
+    # # Sending the message to the bot and fetching a response
+    # response = conversation.message(workspace_id=workspace_id, message_input={
+    #     'text': inp}, context = response['context'])
+
+    print("add_chat got called")
     errors = []
 
     if not 'item' in request.POST or not request.POST['item']:
@@ -302,186 +333,16 @@ def add_chat(request):
         json_error = '{ "error": "'+message+'" }'
         return HttpResponse(json_error, content_type='application/json')
 
-    new_mess = Mess(text=request.POST['item'],
+    inp = request.POST['item']
+    new_mess = Mess(text = inp,
                     user=request.user,
                     created=datetime.datetime.now(),
-                    reality_coefficient=True
+                    reality_coefficient=True,
+                    context = repr(response['context'])
                     )
     new_mess.save()
+
     mess = Mess.objects.all()
-    response_text = serializers.serialize('json', Mess.objects.all())
-    return HttpResponse(response_text, content_type='application/json')
-
-# Action for adding specific information to the observe tab
-@login_required
-def add_observe(request):
-
-    errors = []
-
-    if not 'item' in request.POST or not request.POST['item']:
-        message = 'You must enter an item to add.'
-        json_error = '{ "error": "'+message+'" }'
-        return HttpResponse(json_error, content_type='application/json')
-
-
-    stringout = str(request.POST['item'])
-    string1 = stringout.split('~', 1)
-
-    searchval =  string1[0]
-    string2 = string1[1].split('~', 1)
-    searchtype = string2[0]
-    searchparam = string2[1]
-
-    if searchtype == "Tag":
-        search_tag(request, searchparam, searchval)
-    elif searchtype== "Location":
-        search_location(request, searchparam)
-    else:
-        print("Failure: Did not search by Tag or Location.")    
-
-    response_text = serializers.serialize('json', Mess.objects.all())
-    return HttpResponse(response_text, content_type='application/json')
-
-
-# Action for adding all the personal top information to the you tab
-@login_required
-def add_you(request):
-
-    errors = []
-
-    # Delete previous search objects
-    # SearchRes.objects.all().delete()
-    # ArtistRes.objects.all().delete()
-    # GenreRes.objects.all().delete()
-    # PlaylistRes.objects.all().delete()
-
-    chatter = Chatters.objects.get(name = str(request.user.username))
-    chatter.toptracks.all().delete()
-    chatter.topartists.all().delete()
-    chatter.topgenres.all().delete()
-
-    auth_token = chatter.spotify_auth
-    sp = spotipy.Spotify(auth=auth_token)
-    result = sp.current_user_top_tracks()
-
-    count = 0
-
-    # print json.dumps(result, indent=6, sort_keys=True) # Pretty Print
-    # Find the user's top tracks   
-
-    for track in result['items'][:10]:
-
-        if (len(track['album']['images']) > 0):
-            imagelink = track['album']['images'][0]['url']
-        else:
-            imagelink = '../../static/img/egg.png'
-
-        new_track = Tracks(track=track['name'],
-                           artist=track['artists'][0]['name'],
-                           album=track['album']['name'],
-                           img=imagelink,
-                           created=timezone.now(),
-                           index = count,
-                           popularity = track['popularity'],
-                           uri=track['uri'],
-                           top_tracks = chatter
-                           )
-        features = sp.audio_features(str(track['uri'].split(':')[2]))
-        new_track.acousticness = features[0]['acousticness']
-        new_track.danceability = features[0]['danceability']
-        new_track.energy = features[0]['energy']
-        new_track.instrumentalness = features[0]['instrumentalness']
-        new_track.key = features[0]['key']
-        new_track.liveness = features[0]['liveness']
-        new_track.loudness = features[0]['loudness']
-        new_track.speechiness = features[0]['speechiness']
-        new_track.tempo = features[0]['tempo']
-        new_track.time_signature = features[0]['time_signature']
-        new_track.valence = features[0]['valence']
-
-
-        new_track.save()
-        count = count + 1
-
-
-    result = sp.current_user_top_artists()
-
-    count = 0
-    # print json.dumps(result, indent=6, sort_keys=True) # Pretty Print
-    # Find the users top artists, determine genres
-
-    for artist in result['items'][:10]:
-
-        if (len(artist['images']) > 0):
-            imagelink = artist['images'][0]['url']
-        else:
-            imagelink = '../../static/img/egg.png'
-
-        new_artist = Artists(artist=artist['name'],
-                             uri = artist['uri'],
-                             popularity = artist['popularity'],
-                             img = imagelink,
-                             created = timezone.now(),
-                             top_artists = chatter,
-                             index = count
-                             )
-        new_artist.save()
-        count = count + 1
-
-        genres = artist['genres']
-        length = len(genres)
-
-        genrelist = chatter.topgenres.all()
-
-        for genre in genres[:length]:
-
-            if(len(genrelist.filter(genre=genre)) == 1):
-                addgenre = genrelist.get(genre=genre)
-                addgenre.number = addgenre.number + 1
-                addgenre.save()
-            else:
-                new_genre = Genres(genre = genre,
-                                   created = timezone.now(),
-                                   top_genres = chatter,
-                                   number = 1
-                                  )
-                new_genre.save()
-
-    # genrelist = chatter.topgenres.all()
-    # genrelist.filter(number__lte=2).delete()
-
-    # Determine user's aggregate metadata
-    tracklist = chatter.toptracks.all()
-    count = 0
-
-    for track in tracklist:
-        chatter.acousticness = chatter.acousticness + tracklist[count].acousticness
-        chatter.danceability = chatter.danceability + tracklist[count].danceability
-        chatter.energy = chatter.energy + tracklist[count].energy
-        chatter.instrumentalness = chatter.instrumentalness + tracklist[count].instrumentalness
-        chatter.key = chatter.key + tracklist[count].key
-        chatter.liveness = chatter.liveness + tracklist[count].liveness
-        chatter.loudness = chatter.loudness + tracklist[count].loudness
-        chatter.speechiness = chatter.speechiness + tracklist[count].speechiness
-        chatter.tempo = chatter.tempo + tracklist[count].tempo
-        chatter.time_signature = chatter.time_signature + tracklist[count].time_signature
-        chatter.valence = chatter.valence + tracklist[count].valence
-        chatter.save()
-        count = count + 1
-
-    chatter.acousticness = chatter.acousticness/count
-    chatter.danceability = chatter.danceability/count
-    chatter.energy = chatter.energy/count
-    chatter.instrumentalness = chatter.instrumentalness/count
-    chatter.key = chatter.key/count
-    chatter.liveness = chatter.liveness/count
-    chatter.loudness = chatter.loudness/count
-    chatter.speechiness = chatter.speechiness/count
-    chatter.tempo = chatter.tempo/count
-    chatter.time_signature = chatter.time_signature/count
-    chatter.valence = chatter.valence/count
-    chatter.save()
-
     response_text = serializers.serialize('json', Mess.objects.all())
     return HttpResponse(response_text, content_type='application/json')
 
@@ -522,15 +383,17 @@ def add_explore(request):
     searchval = string1[0]
 
     if searchparam == "Artist":
-        search_artist(request, searchval)
+        search_artist(searchval)
     elif searchparam == "Track":
-        search_track(request, searchval)
+        search_track(searchval)
     elif searchparam == "Genre":
         search_genre(request, searchval)
     elif searchparam == "Playlist":
-        search_playlist(request, searchval)
+        search_playlist(searchval)
     else:
         print("Failure")
+
+
 
     # print(request.POST['select'])
 
@@ -574,12 +437,14 @@ def logout_step(request):
     guy = User.objects.get(username__iexact = str(request.user.username))
     Mess.objects.filter(user=guy).delete()
 
+    response = ""
+
     return redirect(reverse('logout'))
 
 # Action for using Ajax to automatically update chat content
 @login_required
 def get_list_json(request):
-    guy1 = serializers.serialize('json', Mess.objects.filter(user = request.user))
+    guy1 = serializers.serialize('json', Mess.objects.all())
     guy2 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
     guys = {'mess': guy1, 'chatter': guy2}
     out = json.dumps(guys)
@@ -589,54 +454,13 @@ def get_list_json(request):
 # Action for using Ajax to automatically update search content
 @login_required
 def get_explore_json(request):
-    guy1 = serializers.serialize('json', SearchRes.objects.filter(user = request.user))
-    guy2 = serializers.serialize('json', ArtistRes.objects.filter(user = request.user))
-    guy4 = serializers.serialize('json', GenreRes.objects.filter(user = request.user))
-    guy5 = serializers.serialize('json', PlaylistRes.objects.filter(user = request.user))
+    guy1 = serializers.serialize('json', SearchRes.objects.all())
+    guy2 = serializers.serialize('json', ArtistRes.objects.all())
+    guy4 = serializers.serialize('json', GenreRes.objects.all())
+    guy5 = serializers.serialize('json', PlaylistRes.objects.all())
     guy3 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
     guys = {'search': guy1, 'search_artist': guy2, 'chatter': guy3, 'search_genre': guy4, 'search_playlist': guy5}
     out = json.dumps(guys)
-
-    return HttpResponse(out, content_type='application/json')
-
-# Action for using Ajax to automatically update search content
-@login_required
-def get_observe_json(request):
-    guy1 = serializers.serialize('json', SearchRes.objects.filter(user = request.user))
-    guy2 = serializers.serialize('json', Chatters.objects.all())
-    guy4 = serializers.serialize('json', hotTracks.objects.all())
-    guy3 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
-    guys = {'search': guy1, 'chatters': guy2, 'chatter': guy3, 'htracks': guy4}
-    out = json.dumps(guys)
-
-    return HttpResponse(out, content_type='application/json')
-
-# Action for using Ajax to automatically update you content
-@login_required
-def get_you_json(request):
-    chatter = Chatters.objects.get(name = str(request.user.username))
-    guy1 = serializers.serialize('json', chatter.toptracks.all())
-    guy2 = serializers.serialize('json', chatter.topartists.all())
-    guy4 = serializers.serialize('json', chatter.topgenres.all())
-    guy3 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
-    guys = {'tracks': guy1, 'artists': guy2, 'chatter': guy3, 'genres': guy4}
-    out = json.dumps(guys)
-
-    return HttpResponse(out, content_type='application/json')
-
-# Action for using Ajax to automatically update you city
-@login_required
-def get_city_json(request):
-
-    loc = dict(locations)
-    countlist = []
-    for i in range(0, 380):
-        countlist.append(len( Chatters.objects.all().filter(location=str(i)) ))
-
-    chatter = Chatters.objects.get(name = str(request.user.username))
-    guy1 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
-    loc.update({'chatter': guy1, 'countlist': countlist})
-    out = json.dumps(loc)
 
     return HttpResponse(out, content_type='application/json')
 
@@ -672,20 +496,18 @@ def get_list_xml_template(request):
 # Searching for an artist
 # Returns : a JSON, comprising of albums by the arist, tracks, and
 # metadata for all of it. Finds the artist URI.
-def search_artist(request, search_str):
+def search_artist(search_str):
 
     # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    ArtistRes.objects.filter(user = request.user).delete()
-    GenreRes.objects.filter(user = request.user).delete()
-    PlaylistRes.objects.filter(user = request.user).delete()
-    
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
 
     sp = spotipy.Spotify()
     result = sp.search(search_str, type='artist')  # result contains data in JSON format
 
     num = len(result['artists']['items'])
-       
+
     for item in result['artists']['items'][:num]:
 
         if (len(item['images']) > 0):
@@ -694,7 +516,6 @@ def search_artist(request, search_str):
             imagelink = '../../static/img/egg.png'
 
         new_search = ArtistRes(artist=item['name'],
-                               user = request.user,
                                uri = item['uri'],
                                popularity = item['popularity'],
                                img = imagelink,
@@ -705,13 +526,13 @@ def search_artist(request, search_str):
 # Searching for an artist
 # Returns : a JSON, comprising of albums by the arist, tracks, and
 # metadata for all of it. Finds the artist URI.
-def search_track(request, search_str):
+def search_track(search_str):
 
     # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    ArtistRes.objects.filter(user = request.user).delete()
-    GenreRes.objects.filter(user = request.user).delete()
-    PlaylistRes.objects.filter(user = request.user).delete()
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
 
     sp = spotipy.Spotify()
     result = sp.search(search_str, type='track')  # result contains data in JSON format
@@ -719,7 +540,7 @@ def search_track(request, search_str):
     # print json.dumps(result, indent=6, sort_keys=True)
 
     num = len(result['tracks']['items'])
-       
+
     for item in result['tracks']['items'][:num]:
 
         if (len(item['album']['images']) > 0):
@@ -728,7 +549,6 @@ def search_track(request, search_str):
             imagelink = '../../static/img/egg.png'
 
         new_search = SearchRes(track=item['name'],
-                               user = request.user,
                                artist=item['artists'][0]['name'],
                                album=item['album']['name'],
                                img=imagelink,
@@ -739,13 +559,13 @@ def search_track(request, search_str):
         new_search.save()
 
 # Searching for a playlist
-def search_playlist(request, search_str):
+def search_playlist(search_str):
 
     # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    ArtistRes.objects.filter(user = request.user).delete()
-    GenreRes.objects.filter(user = request.user).delete()
-    PlaylistRes.objects.filter(user = request.user).delete()
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
 
     sp = spotipy.Spotify()
     result = sp.search(search_str, type='playlist')
@@ -769,7 +589,6 @@ def search_playlist(request, search_str):
             ownername = ownerresult['id']
 
         new_search = PlaylistRes(playlist = item['name'],
-                                 user = request.user,
                                  img = imagelink,
                                  owner = ownername,
                                  ownerid = ownerresult['id'],
@@ -784,10 +603,10 @@ def search_playlist(request, search_str):
 def search_genre(request, search_str):
 
     # Delete all previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    ArtistRes.objects.filter(user = request.user).delete()
-    GenreRes.objects.filter(user = request.user).delete()
-    PlaylistRes.objects.all().filter(user = request.user).delete()
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
 
     chatter = Chatters.objects.get(name = str(request.user.username))
 
@@ -811,7 +630,7 @@ def search_genre(request, search_str):
         # print json.dumps(results, indent=6, sort_keys=True)
 
         num = len(results['tracks'])
-       
+
         for item in results['tracks'][:num]:
 
             if (len(item['album']['images']) > 0):
@@ -820,7 +639,6 @@ def search_genre(request, search_str):
                 imagelink = '../../static/img/egg.png'
 
             new_search = ArtistRes(artist=item['artists'][0]['name'],
-                                   user = request.user,
                                    uri = item['artists'][0]['uri'],
                                    popularity = item['popularity'],
                                    img = imagelink,
@@ -830,112 +648,15 @@ def search_genre(request, search_str):
 
     else:
         new_search = GenreRes(genre='Try one of these:',
-                              user = request.user,
                               created = timezone.now()
                               )
         new_search.save()
 
         for item in results['genres']:
             new_search = GenreRes(genre=item,
-                                  user = request.user,
                                   created = timezone.now()
                                   )
             new_search.save()
-
-# View for searching by tag and parameter
-def search_tag(request, searchparam, searchval):
-
-    # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    chatter = Chatters.objects.get(name = str(request.user.username))
-    auth_token = chatter.spotify_auth
-
-    sp = spotipy.Spotify(auth=auth_token)
-    result = sp.search(searchval, type='track')  # result contains data in JSON format
-
-    # print json.dumps(result, indent=6, sort_keys=True)
-
-    num = len(result['tracks']['items'])
-       
-    for item in result['tracks']['items'][:num]:
-
-        if (len(item['album']['images']) > 0):
-            imagelink = item['album']['images'][0]['url']
-        else:
-            imagelink = '../../static/img/egg.png'
-
-        new_search = SearchRes(track=item['name'],
-                               user = request.user,
-                               artist=item['artists'][0]['name'],
-                               album=item['album']['name'],
-                               img=imagelink,
-                               created=timezone.now(),
-                               popularity = item['popularity'],
-                               uri=item['uri']
-                               )
-        new_search.save()
-        features = sp.audio_features(str(new_search.uri.split(':')[2]))
-        new_search.acousticness = features[0]['acousticness']
-        new_search.danceability = features[0]['danceability']
-        new_search.energy = features[0]['energy']
-        new_search.instrumentalness = features[0]['instrumentalness']
-        new_search.key = features[0]['key']
-        new_search.liveness = features[0]['liveness']
-        new_search.loudness = features[0]['loudness']
-        new_search.speechiness = features[0]['speechiness']
-        new_search.tempo = features[0]['tempo']
-        new_search.time_signature = features[0]['time_signature']
-        new_search.valence = features[0]['valence']
-        new_search.save()
-
-# View for searchign by location
-def search_location(request, searchloc):
-
-    # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    locdict = dict(locations)
-
-    locid = ''
-    for i in range(0, 380):
-        if (searchloc == locdict[str(i)].split(',')[0]):
-            locid = str(i)
-
-    areausers = Chatters.objects.filter(location = locid)
-    hotTracks.objects.filter(location=locid).delete()
-
-    for usr in areausers:
-        for track in usr.toptracks.all():
-
-            if (len( hotTracks.objects.filter(location=locid, uri=track.uri) ) < 1):
-
-                new_track = hotTracks(track =track.track,
-                                      artist=track.artist,
-                                      album=track.album,
-                                      img=track.img,
-                                      created=timezone.now(),
-                                      popularity = track.popularity,
-                                      uri=track.uri,
-                                      location=locid,
-                                      duplicates = 1
-                                   )
-                new_track.save()
-                new_track.acousticness = track.acousticness
-                new_track.danceability = track.danceability
-                new_track.energy = track.energy
-                new_track.instrumentalness = track.instrumentalness
-                new_track.key = track.key
-                new_track.liveness = track.liveness
-                new_track.loudness = track.loudness
-                new_track.speechiness = track.speechiness
-                new_track.tempo = track.tempo
-                new_track.time_signature = track.time_signature
-                new_track.valence = track.valence
-                new_track.save()
-
-            else:
-                new_track = hotTracks.objects.get(location=locid, uri=track.uri)
-                new_track.duplicates = new_track.duplicates + 1
-                new_track.save()
 
 
 # View for calling search_genre through a link
@@ -964,10 +685,10 @@ def artist_top_ten(request):
     uri = str(request.POST['item'])
 
     # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    ArtistRes.objects.filter(user = request.user).delete()
-    GenreRes.objects.filter(user = request.user).delete()
-    PlaylistRes.objects.filter(user = request.user).delete()
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
 
     spotify = spotipy.Spotify()
     results = spotify.artist_top_tracks(uri)
@@ -982,7 +703,6 @@ def artist_top_ten(request):
             imagelink = '../../static/img/egg.png'
 
         new_search = SearchRes(track=track['name'],
-                               user = request.user,
                                artist=track['artists'][0]['name'],
                                album=track['album']['name'],
                                img=imagelink,
@@ -990,131 +710,6 @@ def artist_top_ten(request):
                                popularity = track['popularity'],
                                uri=track['uri']
                                )
-        new_search.save()
-
-    response_text = serializers.serialize('json', SearchRes.objects.all())
-    return HttpResponse(response_text, content_type='application/json')
-
-# Finding relavent track for recommendations
-def recommend_track(request):
-
-    if not 'item' in request.POST or not request.POST['item']:
-        message = 'Track must have a URI to pass to the Spotify API.'
-        json_error = '{ "error": "'+message+'" }'
-        return HttpResponse(json_error, content_type='application/json')
-
-    stringout = request.POST['item'].encode('utf-8')
-    string1 = stringout.split('~', 1)
-
-    uri =  string1[0]
-    string2 = string1[1].split('~', 1)
-    searchval = string2[0]
-    searchparam = string2[1]
-
-    if (searchparam == 'Key'):
-
-        if(searchval == 'C'):
-            searchval = 0
-        elif(searchval == 'C♯/D♭'):
-            searchval = 1
-        elif(searchval == 'D'):
-            searchval = 2
-        elif(searchval == 'D♯/E♭'):
-            searchval = 3
-        elif(searchval == 'E'):
-            searchval = 4
-        elif(searchval == 'F'):
-            searchval = 5
-        elif(searchval == 'F♯/G♭'):
-            searchval = 6
-        elif(searchval == 'G'):
-            searchval = 7
-        elif(searchval == 'G♯/A♭'):
-            searchval = 8
-        elif(searchval == 'A'):
-            searchval = 9
-        elif(searchval == 'A♯/B♭'):
-            searchval = 10
-        elif(searchval == 'B'):
-            searchval = 11
-        else:
-            searchval = 'error'
-
-    elif (searchparam == 'Time Signature'):
-        searchval = searchval.split('/', 1)[0]
-    elif (searchparam == 'Tempo'):
-        searchval = searchval.split(' ', 1)[0]
-    elif (searchparam == 'Loudness'):
-        test = searchval.split('%', 1)[0]
-        searchval = eval(test)/10. - 10
-    else:
-        searchval = eval(searchval.split('%', 1)[0])/100.
-
-
-    # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    chatter = Chatters.objects.get(name = str(request.user.username))
-    auth_token = chatter.spotify_auth
-
-    kwarg = 'target_' + searchparam
-    sp = spotipy.Spotify(auth_token)
-
-    if (searchparam == "Acousticness"):
-        results = sp.recommendations(seed_tracks = [uri], target_acousticness = [searchval])
-    elif (searchparam == "Danceability"):
-        results = sp.recommendations(seed_tracks = [uri], target_danceability = [searchval])
-    elif (searchparam == "Energy"):
-        results = sp.recommendations(seed_tracks = [uri], target_energy = [searchval])
-    elif (searchparam == "Instrumentalness"):
-        results = sp.recommendations(seed_tracks = [uri], target_instrumentalness = [searchval])
-    elif (searchparam == "Key"):
-        results = sp.recommendations(seed_tracks = [uri], target_key = [searchval])
-    elif (searchparam == "Liveness"):
-        results = sp.recommendations(seed_tracks = [uri], target_liveness = [searchval])
-    elif (searchparam == "Loudness"):
-        results = sp.recommendations(seed_tracks = [uri], target_loudness = [searchval])
-    elif (searchparam == "Speechiness"):
-        results = sp.recommendations(seed_tracks = [uri], target_speechiness = [searchval])
-    elif (searchparam == "Tempo"):
-        results = sp.recommendations(seed_tracks = [uri], target_tempo = [searchval])
-    elif (searchparam == "Time Signature"):
-        results = sp.recommendations(seed_tracks = [uri], target_time_signature = [searchval])
-    elif (searchparam == "Valence"):
-        results = sp.recommendations(seed_tracks = [uri], target_valence = [searchval])
-    else:
-        results = 'Error'
-    
-    # print json.dumps(results, indent=6, sort_keys=True) # Pretty Print
-
-    for track in results['tracks'][:20]:
-
-        if (len(track['album']['images']) > 0):
-            imagelink = track['album']['images'][0]['url']
-        else:
-            imagelink = '../../static/img/egg.png'
-
-        new_search = SearchRes(track=track['name'],
-                               user = request.user,
-                               artist=track['artists'][0]['name'],
-                               album=track['album']['name'],
-                               img=imagelink,
-                               created=timezone.now(),
-                               popularity = track['popularity'],
-                               uri=track['uri']
-                               )
-        new_search.save()
-        features = sp.audio_features(str(track['uri'].split(':')[2]))
-        new_search.acousticness = features[0]['acousticness']
-        new_search.danceability = features[0]['danceability']
-        new_search.energy = features[0]['energy']
-        new_search.instrumentalness = features[0]['instrumentalness']
-        new_search.key = features[0]['key']
-        new_search.liveness = features[0]['liveness']
-        new_search.loudness = features[0]['loudness']
-        new_search.speechiness = features[0]['speechiness']
-        new_search.tempo = features[0]['tempo']
-        new_search.time_signature = features[0]['time_signature']
-        new_search.valence = features[0]['valence']
         new_search.save()
 
     response_text = serializers.serialize('json', SearchRes.objects.all())
@@ -1132,22 +727,22 @@ def get_playlist(request):
     uri = stringout.split(':')[4]
     userid = stringout.split(':')[2]
 
-    # print("Get Playlist")
-    # print("URI:")
-    # print(uri)
-    # print("User ID:")
-    # print(userid)
+    print("Get Playlist")
+    print("URI:")
+    print(uri)
+    print("User ID:")
+    print(userid)
 
     # Delete previous search objects
-    SearchRes.objects.filter(user = request.user).delete()
-    ArtistRes.objects.filter(user = request.user).delete()
-    GenreRes.objects.filter(user = request.user).delete()
-    PlaylistRes.objects.filter(user = request.user).delete()
+    SearchRes.objects.all().delete()
+    ArtistRes.objects.all().delete()
+    GenreRes.objects.all().delete()
+    PlaylistRes.objects.all().delete()
 
     chatter = Chatters.objects.get(name = str(request.user.username))
     auth_token = chatter.spotify_auth
 
-    spotify = spotipy.Spotify(auth=auth_token)
+    spotify = spotipy.Spotify(auth_token)
     results = spotify.user_playlist(userid, uri)
 
     # print json.dumps(results, indent=6, sort_keys=True) # Pretty Print
@@ -1165,8 +760,7 @@ def get_playlist(request):
                                img=imagelink,
                                created=timezone.now(),
                                popularity = track['track']['popularity'],
-                               uri=track['track']['uri'],
-                               user = request.user
+                               uri=track['track']['uri']
                                )
         new_search.save()
 
@@ -1186,7 +780,3 @@ def get_track_info(self, tid):
         print(json.dumps(analysis, indent=4))
         print()
     print ("features retrieved in %.2f seconds" % (delta,))
-
-
-
-
