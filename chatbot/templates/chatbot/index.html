@@ -27,7 +27,7 @@
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'chat' %}">Talk Music To Me</a>
+            <a class="navbar-brand" href="{% url 'home' %}">Talk Music To Me</a>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
@@ -35,10 +35,10 @@
                 </ul>
                 <form class="form-inline my-2 my-lg-0" action="{% url 'logout-step' %}" method="POST">
                     <div class="navbar-nav nav-item active mr-auto">
-                        <a class="nav-link" href="{% url 'chat' %}">Chat</a>
-                        <a class="nav-link" href="{% url 'explore' %}">Explore</a>
-                        <a class="nav-link" href="{% url 'observe' %}">Observe</a>
-                        <a class="nav-link" href="{% url 'you' %}">You</a>
+                        <a class="nav-link" id="chattab" href="#" onclick="SpotifyAlert()">Chat</a>
+                        <a class="nav-link" href="{% url 'explore' %}">Hunt</a>
+                        <a class="nav-link" id="exploretab" href="#" onclick="SpotifyAlert()">Explore</a>
+                        <a class="nav-link" id="youtab" href="#" onclick="SpotifyAlert()">You</a>
                         <a class="nav-link" href="{% url 'settings' %}">Settings</a>
                     </div>
                     <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">logout</button>

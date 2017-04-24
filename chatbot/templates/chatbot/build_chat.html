@@ -2,7 +2,7 @@
 
 {% block writing %}
 <div class="jumbotron col-lg">
-    <h5 class="display-1">Chat with Botto!</h5>
+    <h5 class="display-4">Chat with Botto!</h5>
 
     {% for error in errors %}
     <div class="col-xs-12" style="height:10px;"></div>
@@ -27,11 +27,11 @@
     </div>
     <div class="add-form col-md-12">
         <div class="row">
-            <div class="input-group input-group-lg col-md-10">
+            <div class="input-group input-group-lg">
                 <input type="text" name="item" id="item" autofocus class="form-control" placeholder="Chat!" aria-describedby="sizing-addon1" maxlength="160">
-            </div>
-            <div class="input-group input-group-lg col-md-2">
-                <button class="btn btn-outline-primary" type="submit" onclick="AddChat()">Submit</button>
+                <span class="input-group-btn">
+                    <button class="btn btn-outline-primary" type="button" onclick="AddChat()">Submit</button>
+                </span>
             </div>
         {% csrf_token %}
         </div>

@@ -10,6 +10,8 @@ class RegistrationForm(forms.Form):
                                  widget=forms.TextInput(attrs={'placeholder': 'Last Name', 'class': 'form-control my-1'}))
     email      = forms.CharField(max_length=50, label='',
                                  widget = forms.EmailInput(attrs={'placeholder': 'Email', 'class': 'form-control my-1'}))
+    location = forms.ChoiceField(choices = locations, label='',
+                                 widget = forms.Select(attrs={'placeholder': 'Location', 'class': 'form-control my-1'}))
     username   = forms.CharField(max_length = 20, label='',
                                  widget = forms.TextInput(attrs={'placeholder': 'Username', 'class': 'form-control my-1'}))
     password1  = forms.CharField(max_length = 200, label='', 
@@ -30,6 +32,16 @@ class RegistrationForm(forms.Form):
         password2 = cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords did not match.")
+
+        # Get the right code for the location
+        loc = cleaned_data.get('location')
+
+        bigdict = dict(locations)
+        outl = ''
+
+        for l in bigdict:
+            if (loc == bigdict[str(l)]):
+                outl = l
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
@@ -104,10 +116,17 @@ class AddForm(forms.ModelForm):
 #         exclude = ['text']
 
 class EditForm(forms.ModelForm):
-    age = forms.CharField(max_length=20, label='',
-                          widget=forms.TextInput(attrs={'placeholder': 'Age', 'class': 'form-control my-1'}))
-    spotify = forms.CharField(max_length=430, label='',
-                              widget=forms.Textarea(attrs={'placeholder': 'Link', 'class': 'form-control my-1'}))
+
+    first_name = forms.CharField(max_length=20, label='', required=False,
+                                 widget=forms.TextInput(attrs={'placeholder': 'First Name', 'class': 'form-control my-1', 'id': 'f-firstname'}))
+    last_name  = forms.CharField(max_length=20, label='',required=False,
+                                 widget=forms.TextInput(attrs={'placeholder': 'Last Name', 'class': 'form-control my-1', 'id': 'f-lastname'}))
+    age = forms.CharField(max_length=20, label='', required=False,
+                          widget=forms.TextInput(attrs={'placeholder': 'Age', 'class': 'form-control my-1', 'id': 'f-age'}))
+    email      = forms.CharField(max_length=50, label='',required=False,
+                                 widget = forms.EmailInput(attrs={'placeholder': 'Email', 'class': 'form-control my-1', 'id': 'f-email'}))
+    location = forms.ChoiceField(choices = locations, label='',required=False,
+                                 widget = forms.Select(attrs={'placeholder': 'Location', 'class': 'form-control my-1', 'id': 'f-location'}))
 
     def clean(self):
         cleaned_data = super(EditForm, self).clean()
@@ -116,9 +135,15 @@ class EditForm(forms.ModelForm):
         if len(age) > 5:
             raise forms.ValidationError("Age is too old. Enter feasable age.")
 
-        spotify = cleaned_data.get('spotify')
-        if len(bio) > 430:
-            raise forms.ValidationError("Spotify profile pate is too long.")
+        # Get the right code for the location
+        loc = cleaned_data.get('location')
+
+        bigdict = dict(locations)
+        outl = ''
+
+        for l in bigdict:
+            if (loc == bigdict[str(l)]):
+                outl = l
 
         return cleaned_data
 
@@ -126,8 +151,7 @@ class EditForm(forms.ModelForm):
     class Meta:
         model = Chatters
         fields = (
-            'age',
-            'spotify',
+            'first_name',
         )
 
 # class UploadImageForm(forms.Form):

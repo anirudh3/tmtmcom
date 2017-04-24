@@ -48,15 +48,18 @@ label {
     padding-bottom: 20px;
 }
 
-<<<<<<< HEAD
 .addmargtop{
     margin-top: 20px;
 }
 
-=======
->>>>>>> 836228dcc5e2a3c90ded793deb4299ab0a107e37
 .subpad20{
     padding-bottom: 0px;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 400px;
+    overflow-x: hidden;
 }
 
 .sub-title {

@@ -2,7 +2,7 @@
 
 {% block writing %}
 <div class="jumbotron col-lg">
-    <h5 class="display-1">Observe!</h5>
+    <h2 class="display-4">Explore!</h5>
 
     {% for error in errors %}
     <div class="col-xs-12" style="height:10px;"></div>
@@ -10,23 +10,36 @@
         {{error}}
     </div>
     {% endfor %}
-    <div class="col-xs-12" style="height: 20px;"></div>
+    <div class="col-xs-12" style="height: 5px;"></div>
 
     <form class="add-form col-md-12" action="" method="post">
         <div class="row">
             <div class="input-group input-group-lg">
                 {{ postform}}
-                <div class="input-group-btn">
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Observe By...<span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Location</a></li>
-                        <li><a class="dropdown-item" href="#">Tag</a></li>
+                <div class="input-group-btn">`
+                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="SetObserveToDefault();"id="observe-select">Explore by...<span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a class="dropdown-item" href="#" onclick="SetObserveToLocation();"><h4>Location</h4></a></li>
+                        <li><a class="dropdown-item" href="#" onclick="SetObserveToTag();"><h4>Tag</h4></a></li>
                     </ul>
                 </div>
-                <span class="input-group-addon" id="basic-addon1">Selection</span>
-                <input type="text" name="item" autofocus class="form-control" placeholder="Search!" aria-describedby="sizing-addon1" maxlength="160">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="param-select">Parameter<span class="caret"></span></button>
+                    <ul class="dropdown-menu scrollable-menu" role="menu">
+                        <div id="paramenu-set">
+                            <div class="paramenu">
+                                <p class="dropdown-item paramenu" href="#">Choose an observation first.</p>
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+                <div class="input-group-btn" id="dropdown-value">
+                    <div class="dropdown-value">
+                    </div>
+                </div>
+                <input type="text" name="item" disabled="true" autofocus class="form-control" placeholder="For searching by tag." aria-describedby="sizing-addon1" id="observe-text" maxlength="160">
                 <span class="input-group-btn">
-                    <button class="btn btn-outline-primary" type="button">Go!</button>
+                    <button class="btn btn-outline-primary" type="button" onclick="AddObserve()">Go!</button>
                 </span>
             </div>
             {% csrf_token %}
@@ -36,57 +49,11 @@
     <div class="panel panel-body">
         <div class="table-container">
             <table class="table table-filter">
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="media">
-                                <a href="#" class="pull-left">
-                                    <img src="../../static/img/egg.png" height="64px" width="64px" class="media-photo">
-                                </a>
-                                <div class="media-body">
-                                    <span class="media-meta pull-right">Release Date 1</span>
-                                    <h4 class="title">
-                                        Song 1
-                                        <span class="float-right">(Artist 1)</span>
-                                    </h4>
-                                    <p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="media">
-                                <a href="#" class="pull-left">
-                                    <img src="../../static/img/egg.png" height="64px" width="64px" class="media-photo">
-                                </a>
-                                <div class="media-body">
-                                    <span class="media-meta pull-right">Release Date 2</span>
-                                    <h4 class="title">
-                                        Song 2
-                                        <span class="float-right">(Artist 2)</span>
-                                    </h4>
-                                    <p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="media">
-                                <a href="#" class="pull-left">
-                                    <img src="../../static/img/egg.png" height="64px" width="64px" class="media-photo">
-                                </a>
-                                <div class="media-body">
-                                    <span class="media-meta pull-right">Release Date 3</span>
-                                    <h4 class="title">
-                                        Song 3
-                                        <span class="float-right">(Artist 3)</span>
-                                    </h4>
-                                    <p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-                                </div>
-                            </div>
-                        </td>
+                <tbody id="observe-list">
+                    <tr class="searchres">
+                        <div class="observe-list searchres">
+                            <h6>Explore something!</h6>
+                        </div>
                     </tr>
                 </tbody>
             </table>
