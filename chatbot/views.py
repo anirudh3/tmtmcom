@@ -24,6 +24,15 @@ from django.contrib.auth import login, authenticate
 # # Imports the Item class
 from chatbot.models import *
 
+# # Imports the Posters class
+# from chatbot.models import Posters
+
+# # Import the Comments class
+# from chatbot.models import Comment
+
+# Import the Watson Bluemix Conversation API
+from watson_developer_cloud import ConversationV1
+
 # Imports the forms
 from chatbot.forms import *
 
@@ -58,6 +67,19 @@ import urllib2
 
 state_key = 'GZ2TPEFHXMB4'
 
+# setting up the conversation connection using our set up bot details
+conversation  = ConversationV1(
+    username = '8ab95a83-8ec0-41d9-9158-c21f11c8939b',
+    password = '5WqmrypF4ePz',
+    version='2016-09-20'
+)
+
+response = "" # Global variable for fetched responses from Watson
+inp = ""
+
+# workpace used in Bluemix
+workspace_id = '2bd01e24-6be9-4b60-8fad-387c383b5d7a'
+
 def spotify_callback(request):
     return render(request, 'chatbot/spotify_loggedin.html', {})
 
@@ -65,17 +87,30 @@ def spotify_callback(request):
 @login_required()
 def login_step(request):
 
+    print("login_step called")
+    global response
+
     errors = []
 
     #  Trying to get the login form here...
     if request.method == 'POST':
         print("we at least got a post")
 
+    # This is the deafult, welcoming message from Botto
+    response = conversation.message(workspace_id=workspace_id, message_input={
+        'text': ''})
 
-    new_mess = Mess(text="Hello there! Welcome to Talk Music To Me! My name is Botto. How can I help you find something to listen to today?",
+
+    # new_mess = Mess(text="Hello there! Welcome to Talk Music To Me! My name is Botto. How can I help you find something to listen to today?",
+    #                 user=request.user,
+    #                 created=timezone.now(),
+    #                 reality_coefficient=False
+    #                 )
+    new_mess = Mess(text=response['output']['text'][0],
                     user=request.user,
                     created=timezone.now(),
-                    reality_coefficient=False
+                    reality_coefficient=False,
+                    context = repr(response['context'])
                     )
     new_mess.save()
 
@@ -93,10 +128,30 @@ def login_step(request):
 @login_required()
 def respond_chat(request):
 
-    new_mess = Mess(text="Response template.",
+    print("respond_chat got called")
+    global response
+
+    # Getting the last context for the concerned user
+    last_context = Mess.objects.filter(user = request.user).last().context
+    # print(last_context.last().created)
+
+    # Sending the message to the bot and fetching a response
+    response = conversation.message(workspace_id=workspace_id, message_input={
+        'text': inp}, context = eval(last_context))
+
+    # CHECK WHAT THE ACTION IS
+    # print(type(response['intents']))
+    # if(response['intents']['intent'][0] == "create_playlist"):
+        # print("USER WANTS A PLAYLIST MAN")
+
+
+
+
+    new_mess = Mess(text=response['output']['text'][0],
                     user=request.user,
                     created=timezone.now(),
-                    reality_coefficient=False
+                    reality_coefficient=False,
+                    context = repr(response['context'])
                     )
     new_mess.save()
     mess = Mess.objects.all()
@@ -107,6 +162,11 @@ def respond_chat(request):
 @login_required()
 # @ensure_csrf_cookie
 def home(request):
+    global response
+
+    print("TYPE OF RESPONSE")
+    print(type(response))
+
     # Gets a list of all the messages in the database.
     context = {'form': EditForm()}
     return render(request, 'chatbot/build_settings.html', context)
@@ -122,7 +182,7 @@ def register(request):
         context['form'] = RegistrationForm()
         return render(request, 'chatbot/register.html', context)
 
-    # Creates a bound form from the request POST parameters and makes the 
+    # Creates a bound form from the request POST parameters and makes the
     # form available in the request context dictionary.
     form = RegistrationForm(request.POST)
     context['form'] = form
@@ -132,7 +192,7 @@ def register(request):
         return render(request, 'chatbot/register.html', context)
 
     # At this point, the form data is valid.  Register and login the user.
-    new_user = User.objects.create_user(username=form.cleaned_data['username'], 
+    new_user = User.objects.create_user(username=form.cleaned_data['username'],
                                         password=form.cleaned_data['password1'],
                                         email=form.cleaned_data['email'],
                                         first_name=form.cleaned_data['first_name'],
@@ -159,7 +219,7 @@ Welcome to the music information website Talk Music To Me!  Please click the lin
 verify your email address and complete the registration of your account:
 
   http://%s%s
-""" % (request.get_host(), 
+""" % (request.get_host(),
        reverse('confirm', args=(new_user.username, token)))
 
     send_mail(subject="Verify your email address",
@@ -198,7 +258,7 @@ def settings(request):
         context = {'form': EditForm(), 'cuser': curr_user}
         return render(request, 'chatbot/build_settings.html', context)
 
-    # Creates a bound form from the request POST parameters and makes the 
+    # Creates a bound form from the request POST parameters and makes the
     # form available in the request context dictionary.
     form = EditForm(request.POST)
     context['form'] = form
@@ -272,7 +332,7 @@ def edit(request):
         context = {'chatter': chatter, 'errors': errors, 'form': EditForm(), 'cuser': curr_user}
         return redirect(reverse('settings'), context)
 
-    # Creates a bound form from the request POST parameters and makes the 
+    # Creates a bound form from the request POST parameters and makes the
     # form available in the request context dictionary.
     form = EditForm(request.POST)
     context['form'] = form
@@ -295,6 +355,11 @@ def edit(request):
 @login_required
 def add_chat(request):
 
+    # # Sending the message to the bot and fetching a response
+    # response = conversation.message(workspace_id=workspace_id, message_input={
+    #     'text': inp}, context = response['context'])
+
+    print("add_chat got called")
     errors = []
 
     if not 'item' in request.POST or not request.POST['item']:
@@ -302,10 +367,12 @@ def add_chat(request):
         json_error = '{ "error": "'+message+'" }'
         return HttpResponse(json_error, content_type='application/json')
 
-    new_mess = Mess(text=request.POST['item'],
+    inp = request.POST['item']
+    new_mess = Mess(text = inp,
                     user=request.user,
                     created=datetime.datetime.now(),
-                    reality_coefficient=True
+                    reality_coefficient=True,
+                    context = repr(response['context'])
                     )
     new_mess.save()
     mess = Mess.objects.all()
@@ -337,7 +404,7 @@ def add_observe(request):
     elif searchtype== "Location":
         search_location(request, searchparam)
     else:
-        print("Failure: Did not search by Tag or Location.")    
+        print("Failure: Did not search by Tag or Location.")
 
     response_text = serializers.serialize('json', Mess.objects.all())
     return HttpResponse(response_text, content_type='application/json')
@@ -367,7 +434,7 @@ def add_you(request):
     count = 0
 
     # print json.dumps(result, indent=6, sort_keys=True) # Pretty Print
-    # Find the user's top tracks   
+    # Find the user's top tracks
 
     for track in result['items'][:10]:
 
@@ -679,13 +746,13 @@ def search_artist(request, search_str):
     ArtistRes.objects.filter(user = request.user).delete()
     GenreRes.objects.filter(user = request.user).delete()
     PlaylistRes.objects.filter(user = request.user).delete()
-    
+
 
     sp = spotipy.Spotify()
     result = sp.search(search_str, type='artist')  # result contains data in JSON format
 
     num = len(result['artists']['items'])
-       
+
     for item in result['artists']['items'][:num]:
 
         if (len(item['images']) > 0):
@@ -719,7 +786,7 @@ def search_track(request, search_str):
     # print json.dumps(result, indent=6, sort_keys=True)
 
     num = len(result['tracks']['items'])
-       
+
     for item in result['tracks']['items'][:num]:
 
         if (len(item['album']['images']) > 0):
@@ -811,7 +878,7 @@ def search_genre(request, search_str):
         # print json.dumps(results, indent=6, sort_keys=True)
 
         num = len(results['tracks'])
-       
+
         for item in results['tracks'][:num]:
 
             if (len(item['album']['images']) > 0):
@@ -856,7 +923,7 @@ def search_tag(request, searchparam, searchval):
     # print json.dumps(result, indent=6, sort_keys=True)
 
     num = len(result['tracks']['items'])
-       
+
     for item in result['tracks']['items'][:num]:
 
         if (len(item['album']['images']) > 0):
@@ -1083,7 +1150,7 @@ def recommend_track(request):
         results = sp.recommendations(seed_tracks = [uri], target_valence = [searchval])
     else:
         results = 'Error'
-    
+
     # print json.dumps(results, indent=6, sort_keys=True) # Pretty Print
 
     for track in results['tracks'][:20]:
@@ -1186,7 +1253,3 @@ def get_track_info(self, tid):
         print(json.dumps(analysis, indent=4))
         print()
     print ("features retrieved in %.2f seconds" % (delta,))
-
-
-
-

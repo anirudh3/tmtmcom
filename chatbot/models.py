@@ -509,6 +509,8 @@ class Mess(models.Model):
     user = models.ForeignKey(User, default=None)
     created = models.DateTimeField(default=None)
     reality_coefficient = models.BooleanField(default=True)
+    context = models.TextField(null=True, default=None)
+    # con = models.CharField(max_length=100)
 
     def __unicode__(self): #Tell it to return as a unicode string
         return 'id=' + str(self.id) + ',text="' + self.text + '"'
@@ -588,7 +590,3 @@ class PlaylistRes(models.Model):
 
     class Meta:
         ordering = ["created"]
-
-
-
-
