@@ -539,7 +539,7 @@ function setSong(uri){
 function SpotifyLogin(){
 
     var SPOTIPY_CLIENT_ID = "ba6790bdcd434f06b7b577e344c6e0ae"
-    var SPOTIPY_REDIRECT_URI = "http://talkmusictome/chatbot/callback"
+    var SPOTIPY_REDIRECT_URI = "http://talkmusictome.com/chatbot/callback"
     // var SPOTIPY_REDIRECT_URI = "http://localhost:8000/chatbot/callback"
     var spotifyScope = "playlist-read-private user-top-read playlist-modify-public playlist-modify-private"
     var state = "GZ2TPEFHXMB4"
