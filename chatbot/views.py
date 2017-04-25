@@ -224,7 +224,7 @@ verify your email address and complete the registration of your account:
 
     send_mail(subject="Verify your email address",
               message= email_body,
-              from_email="gosborne@andrew.cmu.edu",
+              from_email="botto@tmtm.come",
               recipient_list=[new_user.email])
 
     context['email'] = form.cleaned_data['email']

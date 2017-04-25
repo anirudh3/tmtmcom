@@ -26,7 +26,7 @@ SECRET_KEY = '4f4)lg-mto%9o&qc$d(fij2&h9hwu1i#l%ufht&8l44ie%ep3i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['138.197.116.179', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['http://54.191.172.157', 'localhost', '127.0.0.1', 'talkmusictome.com']
 
 
 # Application definition
@@ -132,7 +132,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'img')
 
 # Configures Django to merely print emails rather than sending them.
 # Comment out this line to enable real email-sending.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # To enable real email-sending, you should uncomment and 
 # configure the settings below.
