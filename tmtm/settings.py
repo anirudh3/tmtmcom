@@ -26,7 +26,7 @@ SECRET_KEY = '4f4)lg-mto%9o&qc$d(fij2&h9hwu1i#l%ufht&8l44ie%ep3i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://54.191.172.157', 'localhost', '127.0.0.1', 'talkmusictome.com', 'http://138.197.116.179']
+ALLOWED_HOSTS = ['http://54.191.172.157', 'localhost', '127.0.0.1', 'talkmusictome.com', 'http://138.197.116.179', 'www.talkmusictome.com']
 
 
 # Application definition
