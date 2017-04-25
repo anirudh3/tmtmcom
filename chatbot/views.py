@@ -578,7 +578,7 @@ def add_explore(request):
     errors = []
 
     if not 'item' in request.POST or not request.POST['item']:
-        message = 'You must enter an item to add.'
+        message = 'You must enter an item to add for add explore.'
         json_error = '{ "error": "'+message+'" }'
         return HttpResponse(json_error, content_type='application/json')
 
