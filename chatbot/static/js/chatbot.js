@@ -539,7 +539,8 @@ function setSong(uri){
 function SpotifyLogin(){
 
     var SPOTIPY_CLIENT_ID = "ba6790bdcd434f06b7b577e344c6e0ae"
-    var SPOTIPY_REDIRECT_URI = "http://talkmusictome/chatbot/callback"
+    // var SPOTIPY_REDIRECT_URI = "http://talkmusictome/chatbot/callback"
+    var SPOTIPY_REDIRECT_URI = "http://localhost:8000/chatbot/callback"
     var spotifyScope = "playlist-read-private user-top-read playlist-modify-public playlist-modify-private"
     var state = "GZ2TPEFHXMB4"
     var show_dialog = "true"
@@ -577,6 +578,7 @@ function SpotifyLogin(){
 // Check if the user is logged in
 function checkIfLoggedIn(listdata){
     chatter = jQuery.parseJSON(listdata["chatter"]);
+    console.log("check ran")
     var elementExists = document.getElementById("f-firstname");
     if (elementExists){
         document.getElementById("f-firstname").placeholder=chatter[0].fields.fname;
@@ -603,9 +605,14 @@ function checkIfLoggedIn(listdata){
         document.getElementById("f-location").selectedIndex= Number(chatter[0].fields.location);
     }    
 
-
     if (chatter[0].fields.spotify_auth == '0'){
         // console.log("not logged in")
+
+        var elementExists = document.getElementById("huntforgenre");
+        if (elementExists){
+            $(".huntforgenre").remove();
+        }
+
     }
     else{
         // console.log("logged in")

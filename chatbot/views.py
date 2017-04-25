@@ -164,8 +164,8 @@ def respond_chat(request):
 def home(request):
     global response
 
-    print("TYPE OF RESPONSE")
-    print(type(response))
+    # print("TYPE OF RESPONSE")
+    # print(type(response))
 
     # Gets a list of all the messages in the database.
     context = {'form': EditForm()}
