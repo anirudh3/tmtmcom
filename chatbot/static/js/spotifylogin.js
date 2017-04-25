@@ -11,7 +11,7 @@ function parseHash(string){
 $('document').ready(function(){
     var spotifyAccessToken = parseHash(String(window.location.hash));
     //you must clear localStorage for main page listener to trigger on all(including duplicate) entries
-    // localStorage.clear(); Oh, do I now?
+    localStorage.clear(); //Oh, do I now?
     localStorage.setItem('accessToken', spotifyAccessToken);
     window.close();
 });

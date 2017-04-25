@@ -845,6 +845,7 @@ def search_playlist(request, search_str):
                                  followers = ownerresult['followers']['total'],
                                  trackcount = item['tracks']['total']
                                 )
+
         new_search.save()
 
 # Searching for a genre

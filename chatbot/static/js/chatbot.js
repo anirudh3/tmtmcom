@@ -393,6 +393,7 @@ function GetPlaylist(uri, userid){
     // printf(uri)
     // printf(userid)
 
+
     $.ajax({
         url: "/chatbot/get-playlist",
         type: "POST",
@@ -555,9 +556,8 @@ function SpotifyLogin(){
 
         },
          async: false
-        });
+    });
 
-    
     //This event listener will trigger once your callback page adds the token to localStorage
     window.addEventListener("storage",function(event){
         if (event.key == "accessToken"){
@@ -567,8 +567,6 @@ function SpotifyLogin(){
             return true;
         }
         else{
-            alert('Did not log in to spotify. Some functionality restrictions will be made.')
-            console.log('SpotifyLogin failed')
             return false;
         }
     });
@@ -578,7 +576,6 @@ function SpotifyLogin(){
 // Check if the user is logged in
 function checkIfLoggedIn(listdata){
     chatter = jQuery.parseJSON(listdata["chatter"]);
-    console.log("check ran")
     var elementExists = document.getElementById("f-firstname");
     if (elementExists){
         document.getElementById("f-firstname").placeholder=chatter[0].fields.fname;
@@ -605,13 +602,26 @@ function checkIfLoggedIn(listdata){
         document.getElementById("f-location").selectedIndex= Number(chatter[0].fields.location);
     }    
 
+    console.log(chatter[0].fields.spority_auth)
     if (chatter[0].fields.spotify_auth == '0'){
         // console.log("not logged in")
-
+        // Remove hunt by genre from selection list
         var elementExists = document.getElementById("huntforgenre");
         if (elementExists){
             $(".huntforgenre").remove();
         }
+        
+        // Dissalow clicking on playlists
+        elementArray = document.getElementsByClassName("playlistscript");
+
+        if (elementArray.length){
+            for(var i = 0; i < elementArray.length; i++)
+            {
+                // PERFORM STUFF ON THE ELEMENT
+                elementArray[i].onclick = function(){SpotifyAlert};
+            } 
+        }
+
 
     }
     else{
@@ -1199,6 +1209,34 @@ function updateYou(listdata){
 
     );
 
+    // Scroll to the top of the scroll-window
+    var objDiv = document.getElementById("tags");
+
+    if (objDiv != null){
+        objDiv.scrollTop = 0;
+    }
+
+    // Scroll to the top of the scroll-window
+    var objDiv = document.getElementById("artists");
+
+    if (objDiv != null){
+        objDiv.scrollTop = 0;
+    }
+
+    // Scroll to the top of the scroll-window
+    var objDiv = document.getElementById("genres");
+
+    if (objDiv != null){
+        objDiv.scrollTop = 0;
+    }
+
+    // Scroll to the top of the scroll-window
+    var objDiv = document.getElementById("songs");
+
+    if (objDiv != null){
+        objDiv.scrollTop = 0;
+    }
+
 
 
 }
@@ -1318,10 +1356,18 @@ function updateObserve(listdata){
             );
 
     });
+
+    // Scroll to the top of the scroll-window
+    var objDiv = document.getElementById("scroll-window-observe");
+
+    if (objDiv != null){
+        objDiv.scrollTop = 0;
+    }
 }
 
 // Updating the list of search results in the explore Tab
 function updateExplore(listdata){
+    
     search = jQuery.parseJSON(listdata["search"]);
     artists = jQuery.parseJSON(listdata["search_artist"]);
     genres = jQuery.parseJSON(listdata["search_genre"]);
@@ -1455,7 +1501,7 @@ function updateExplore(listdata){
                                 "<div class='media-body'>"+
                                     "<span class='media-meta pull-right'>Followers: " + this.fields.followers + "</span>"+
                                     "<h4 class='title'>"+
-                                        "<a onclick=\"GetPlaylist(" + "\'" + String(this.fields.uri) + "\'" +", " +"\'" + String(this.fields.ownerid) + "\'" + ")\" href='#'>"+
+                                        "<a class = 'playlistscript' onclick=\"GetPlaylist(" + "\'" + String(this.fields.uri) + "\'" +", " +"\'" + String(this.fields.ownerid) + "\'" + ")\" href='#'>"+
                                             this.fields.playlist +
                                         "</a>"+
                                     "</h4>"+
@@ -1472,7 +1518,14 @@ function updateExplore(listdata){
 
     });
 
-    // Scroll to the bottom of the scroll-window
+    checkIfLoggedIn(listdata);
+
+    // Scroll to the top of the scroll-window
+    var objDiv = document.getElementById("scroll-window-explore");
+
+    if (objDiv != null){
+        objDiv.scrollTop = 0;
+    }
 
 }
 
