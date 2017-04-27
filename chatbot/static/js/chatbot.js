@@ -784,9 +784,11 @@ function updateCity(listdata){
 
     for (i = 0; i < 380; i++){
 
-        $("#paramenu-set").append(
-            '<li><a class="dropdown-item paramenu" href="#"" onclick=' + '\"' + 'SetParamTo(' + '\'' + cities[i] + '\'' + ');' + '\"' + '><h6>'+ cities[i] + ' - Users: '+ countlist[i] +'</h6></a></li>'
-        );
+        if(countlist[i] > 0){
+            $("#paramenu-set").append(
+                '<li><a class="dropdown-item paramenu" href="#"" onclick=' + '\"' + 'SetParamTo(' + '\'' + cities[i] + '\'' + ');' + '\"' + '><h6>'+ cities[i] + ' - Users: '+ countlist[i] +'</h6></a></li>'
+            );
+        }
     }
 }
 

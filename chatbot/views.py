@@ -135,9 +135,17 @@ def respond_chat(request):
     last_context = Mess.objects.filter(user = request.user).last().context
     # print(last_context.last().created)
 
+
+
     # Sending the message to the bot and fetching a response
-    response = conversation.message(workspace_id=workspace_id, message_input={
-        'text': inp}, context = eval(last_context))
+    
+    if(last_context == ""):
+        response = conversation.message(workspace_id=workspace_id, message_input={
+            'text': inp})
+    else:
+        response = conversation.message(workspace_id=workspace_id, message_input={
+            'text': inp}, context = eval(last_context))
+
 
     # CHECK WHAT THE ACTION IS
     # print(type(response['intents']))
@@ -367,13 +375,23 @@ def add_chat(request):
         json_error = '{ "error": "'+message+'" }'
         return HttpResponse(json_error, content_type='application/json')
 
+
     inp = request.POST['item']
-    new_mess = Mess(text = inp,
+
+    if(response == ""):
+        new_mess = Mess(text = inp,
                     user=request.user,
                     created=datetime.datetime.now(),
                     reality_coefficient=True,
-                    context = repr(response['context'])
+                    context = ""
                     )
+    else:
+        new_mess = Mess(text = inp,
+                        user=request.user,
+                        created=datetime.datetime.now(),
+                        reality_coefficient=True,
+                        context = repr(response['context'])
+                        )
     new_mess.save()
     mess = Mess.objects.all()
     response_text = serializers.serialize('json', Mess.objects.all())
@@ -439,18 +457,18 @@ def add_you(request):
     for track in result['items'][:10]:
 
         if (len(track['album']['images']) > 0):
-            imagelink = track['album']['images'][0]['url']
+            imagelink = track['album']['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-        new_track = Tracks(track=track['name'],
-                           artist=track['artists'][0]['name'],
-                           album=track['album']['name'],
+        new_track = Tracks(track=track['name'].encode('utf-8'),
+                           artist=track['artists'][0]['name'].encode('utf-8'),
+                           album=track['album']['name'].encode('utf-8'),
                            img=imagelink,
                            created=timezone.now(),
                            index = count,
                            popularity = track['popularity'],
-                           uri=track['uri'],
+                           uri=track['uri'].encode('utf-8'),
                            top_tracks = chatter
                            )
         features = sp.audio_features(str(track['uri'].split(':')[2]))
@@ -480,12 +498,12 @@ def add_you(request):
     for artist in result['items'][:10]:
 
         if (len(artist['images']) > 0):
-            imagelink = artist['images'][0]['url']
+            imagelink = artist['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-        new_artist = Artists(artist=artist['name'],
-                             uri = artist['uri'],
+        new_artist = Artists(artist=artist['name'].encode('utf-8'),
+                             uri = artist['uri'].encode('utf-8'),
                              popularity = artist['popularity'],
                              img = imagelink,
                              created = timezone.now(),
@@ -782,13 +800,13 @@ def search_artist(request, search_str):
     for item in result['artists']['items'][:num]:
 
         if (len(item['images']) > 0):
-            imagelink = item['images'][0]['url']
+            imagelink = item['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-        new_search = ArtistRes(artist=item['name'],
+        new_search = ArtistRes(artist=item['name'].encode('utf-8'),
                                user = request.user,
-                               uri = item['uri'],
+                               uri = item['uri'].encode('utf-8'),
                                popularity = item['popularity'],
                                img = imagelink,
                                created = timezone.now()
@@ -816,18 +834,18 @@ def search_track(request, search_str):
     for item in result['tracks']['items'][:num]:
 
         if (len(item['album']['images']) > 0):
-            imagelink = item['album']['images'][0]['url']
+            imagelink = item['album']['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-        new_search = SearchRes(track=item['name'],
+        new_search = SearchRes(track=item['name'].encode('utf-8'),
                                user = request.user,
-                               artist=item['artists'][0]['name'],
-                               album=item['album']['name'],
+                               artist=item['artists'][0]['name'].encode('utf-8'),
+                               album=item['album']['name'].encode('utf-8'),
                                img=imagelink,
                                created=timezone.now(),
                                popularity = item['popularity'],
-                               uri=item['uri']
+                               uri=item['uri'].encode('utf-8')
                                )
         new_search.save()
 
@@ -847,7 +865,7 @@ def search_playlist(request, search_str):
 
     for item in result['playlists']['items']:
         if (len(item['images']) > 0):
-            imagelink = item['images'][0]['url']
+            imagelink = item['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
@@ -857,15 +875,15 @@ def search_playlist(request, search_str):
         # print json.dumps(ownerresult, indent=6, sort_keys=True)
 
         if(ownerresult['display_name']):
-            ownername = ownerresult['display_name']
+            ownername = ownerresult['display_name'].encode('utf-8')
         else:
-            ownername = ownerresult['id']
+            ownername = ownerresult['id'].encode('utf-8')
 
-        new_search = PlaylistRes(playlist = item['name'],
+        new_search = PlaylistRes(playlist = item['name'].encode('utf-8'),
                                  user = request.user,
                                  img = imagelink,
                                  owner = ownername,
-                                 ownerid = ownerresult['id'],
+                                 ownerid = ownerresult['id'].encode('utf-8'),
                                  created = timezone.now(),
                                  uri = item['uri'],
                                  followers = ownerresult['followers']['total'],
@@ -909,13 +927,13 @@ def search_genre(request, search_str):
         for item in results['tracks'][:num]:
 
             if (len(item['album']['images']) > 0):
-                imagelink = item['album']['images'][0]['url']
+                imagelink = item['album']['images'][0]['url'].encode('utf-8')
             else:
                 imagelink = '../../static/img/egg.png'
 
-            new_search = ArtistRes(artist=item['artists'][0]['name'],
+            new_search = ArtistRes(artist=item['artists'][0]['name'].encode('utf-8'),
                                    user = request.user,
-                                   uri = item['artists'][0]['uri'],
+                                   uri = item['artists'][0]['uri'].encode('utf-8'),
                                    popularity = item['popularity'],
                                    img = imagelink,
                                    created = timezone.now()
@@ -954,20 +972,18 @@ def search_tag(request, searchparam, searchval):
     for item in result['tracks']['items'][:num]:
 
         if (len(item['album']['images']) > 0):
-            imagelink = item['album']['images'][0]['url']
+            imagelink = item['album']['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-	print("Image Link:")
-	print(imagelink)
-        new_search = SearchRes(track=item['name'],
+        new_search = SearchRes(track=item['name'].encode('utf-8'),
                                user = request.user,
-                               artist=item['artists'][0]['name'],
-                               album=item['album']['name'],
+                               artist=item['artists'][0]['name'].encode('utf-8'),
+                               album=item['album']['name'].encode('utf-8'),
                                img=imagelink,
                                created=timezone.now(),
                                popularity = item['popularity'],
-                               uri=item['uri']
+                               uri=item['uri'].encode('utf-8')
                                )
         new_search.save()
         features = sp.audio_features(str(new_search.uri.split(':')[2]))
@@ -1073,18 +1089,18 @@ def artist_top_ten(request):
     for track in results['tracks'][:10]:
 
         if (len(track['album']['images']) > 0):
-            imagelink = track['album']['images'][0]['url']
+            imagelink = track['album']['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-        new_search = SearchRes(track=track['name'],
+        new_search = SearchRes(track=track['name'].encode('utf-8'),
                                user = request.user,
-                               artist=track['artists'][0]['name'],
-                               album=track['album']['name'],
+                               artist=track['artists'][0]['name'].encode('utf-8'),
+                               album=track['album']['name'].encode('utf-8'),
                                img=imagelink,
                                created=timezone.now(),
                                popularity = track['popularity'],
-                               uri=track['uri']
+                               uri=track['uri'].encode('utf-8')
                                )
         new_search.save()
 
@@ -1185,18 +1201,18 @@ def recommend_track(request):
     for track in results['tracks'][:20]:
 
         if (len(track['album']['images']) > 0):
-            imagelink = track['album']['images'][0]['url']
+            imagelink = track['album']['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-        new_search = SearchRes(track=track['name'],
+        new_search = SearchRes(track=track['name'].encode('utf-8'),
                                user = request.user,
-                               artist=track['artists'][0]['name'],
-                               album=track['album']['name'],
+                               artist=track['artists'][0]['name'].encode('utf-8'),
+                               album=track['album']['name'].encode('utf-8'),
                                img=imagelink,
                                created=timezone.now(),
                                popularity = track['popularity'],
-                               uri=track['uri']
+                               uri=track['uri'].encode('utf-8')
                                )
         new_search.save()
         features = sp.audio_features(str(track['uri'].split(':')[2]))
@@ -1251,17 +1267,17 @@ def get_playlist(request):
     for track in results['tracks']['items'][:20]:
 
         if (len(track['track']['album']['images']) > 0):
-            imagelink = track['track']['album']['images'][0]['url']
+            imagelink = track['track']['album']['images'][0]['url'].encode('utf-8')
         else:
             imagelink = '../../static/img/egg.png'
 
-        new_search = SearchRes(track=track['track']['name'],
-                               artist=track['track']['artists'][0]['name'],
-                               album=track['track']['album']['name'],
+        new_search = SearchRes(track=track['track']['name'].encode('utf-8'),
+                               artist=track['track']['artists'][0]['name'].encode('utf-8'),
+                               album=track['track']['album']['name'].encode('utf-8'),
                                img=imagelink,
                                created=timezone.now(),
                                popularity = track['track']['popularity'],
-                               uri=track['track']['uri'],
+                               uri=track['track']['uri'].encode('utf-8'),
                                user = request.user
                                )
         new_search.save()
