@@ -698,20 +698,6 @@ function SpotifyLogin(){
         },
          async: false
     });
-
-    //This event listener will trigger once your callback page adds the token to localStorage
-    window.addEventListener("storage",function(event){
-        if (event.key == "accessToken"){
-            spAccessToken = event.newValue;
-            //do things with spotify API using your access token here!!
-            CallSpotToken(spAccessToken);
-            return true;
-        }
-        else{
-            return false;
-        }
-    });
-
 }
 
 // Check if the user is logged in
@@ -775,25 +761,6 @@ function checkIfLoggedIn(listdata){
             document.getElementById("logged_in").textContent="Logged in";
         }
     }
-}
-
-// Function for adding spotify token to user
-function CallSpotToken(spAccessToken) {
-    $.ajax({
-        url: "/chatbot/add-spotify-token",
-        type: "POST",
-        data: "item="+spAccessToken+"&csrfmiddlewaretoken="+getCSRFToken(),
-        dataType : "json",
-        success: function(response) {
-            if (Array.isArray(response)) {
-                getYou();
-                return true;
-            } else {
-                alert("Could not get Spotify Token.")
-                return false;
-            }
-        }
-    });
 }
 
 // Function for getting a popup window in Safari
@@ -1765,6 +1732,11 @@ $(window).on('load', function() {
                 document.getElementById("item").click();
             }
         }); 
+    }
+
+    var elementExists = document.getElementById("settings");
+    if (elementExists){
+        window.setInterval(getYou, 2000);
     }
     
 
