@@ -328,6 +328,25 @@ function AddObserve(){
 
     else {
 
+        // Removes the old messages
+        $(".searchres").remove();
+
+
+        $("#observe-list").append(
+
+            "<tr class='searchres'>"+
+                "<td>"+
+                    "<div class='row media addpad20'>"+
+                        "<div class='col-md-11'>"+
+                            "<div class='media-body'>"+
+                                "<p class='summary'>Searching!</p>"+
+                            "</div>"+
+                        "</div>"+
+                    "</div>"+
+                "</td>"+
+            "</tr>"
+        );
+
         if(itemSelectValue == "Location"){
             $.ajax({
                 url: "/chatbot/add-observe",
@@ -344,6 +363,26 @@ function AddObserve(){
             });
         }
         else if(itemSelectValue == "Tag"){
+
+            // Removes the old messages
+            $(".searchres").remove();
+
+
+            $("#observe-list").append(
+
+                "<tr class='searchres'>"+
+                    "<td>"+
+                        "<div class='row media addpad20'>"+
+                            "<div class='col-md-11'>"+
+                                "<div class='media-body'>"+
+                                    "<p class='summary'>Searching!</p>"+
+                                "</div>"+
+                            "</div>"+
+                        "</div>"+
+                    "</td>"+
+                "</tr>"
+            );
+
             $.ajax({
                 url: "/chatbot/add-observe",
                 type: "POST",
@@ -374,13 +413,35 @@ function AddExplore(){
     itemTextElement.val('');
     displayError('');
 
-    if (itemSelectValue == "Hunt By..."){
+    if (itemTextValue.indexOf(';') > -1){
+        alert("Please do not use special characters in the search.")
+    }
+    else if (itemSelectValue == "Hunt By..."){
         alert("You must choose a selection to hunt by.")
     }
     else if (!itemTextValue){
         alert("You must input something to search by.")
     }
     else {
+        // Removes the old messages
+        $(".searchres").remove();
+
+
+        $("#explore-list").append(
+
+            "<tr class='searchres'>"+
+                "<td>"+
+                    "<div class='row media addpad20'>"+
+                        "<div class='col-md-11'>"+
+                            "<div class='media-body'>"+
+                                "<p class='summary'>Searching!</p>"+
+                            "</div>"+
+                        "</div>"+
+                    "</div>"+
+                "</td>"+
+            "</tr>"
+        );
+
         $.ajax({
             url: "/chatbot/add-explore",
             type: "POST",
@@ -421,7 +482,34 @@ function recommendTrack(uri){
     var itemSelectValue = $("#value-select").text();
     var itemSelectParam = $("#param-select").text();
 
-    if (itemSelectValue & itemSelectParam){
+    console.log("Item Select Value")
+    console.log(itemSelectValue)
+    console.log("Item Select Param")
+    console.log(itemSelectParam)
+
+    if (itemSelectValue == "Value" || itemSelectParam == "Parameter"){
+        alert("You must choose a tag and value to explore songs.")
+    }
+    else{
+        // Removes the old messages
+        $(".searchres").remove();
+
+
+        $("#observe-list").append(
+
+            "<tr class='searchres'>"+
+                "<td>"+
+                    "<div class='row media addpad20'>"+
+                        "<div class='col-md-11'>"+
+                            "<div class='media-body'>"+
+                                "<p class='summary'>Searching!</p>"+
+                            "</div>"+
+                        "</div>"+
+                    "</div>"+
+                "</td>"+
+            "</tr>"
+        );
+
         $.ajax({
             url: "/chatbot/recommend-track",
             type: "POST",
@@ -435,9 +523,6 @@ function recommendTrack(uri){
                 }
             }
         });
-    }
-    else{
-        alert("You must choose a tag and value to explore songs.")
     }
 
     
@@ -1355,35 +1440,52 @@ function updateObserve(listdata){
 
             $("#observe-list").append(
 
-                    "<tr class='searchres'>"+
-                        "<td>"+
-                            "<div class='row media'>"+
-                                "<div class='col-md-1'>"+
-                                    "<a href='#' class='pull-left show-image'>"+
-                                        "<img src='"+ this.fields.img + "' width='64px' class='media-photo albumart' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">"+
-                                        "<button class='hidden-button' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">Play</button>"+
-                                    "</a>"+
-                                "</div>"+
-                                "<div class='col-md-11'>"+
-                                    "<div class='media-body'>"+
-                                        "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + strinfo + "</span>"+
-                                        "<h4 class='title title-nopad'>"+ 
-                                            "<a onclick=\"recommendTrack(" + "\'" + String(this.fields.uri) + "\'" + ")\" href='#'>"+                               
-                                                this.fields.track +
-                                            '</a>'+
-                                        "</h4>"+
-                                        "<h5>"+
-                                            "<span class='float-right'>"+ this.fields.artist +"</span>"+
-                                        "</h5>"+
-                                        "<p class='summary'>" + this.fields.album + "</p>"+
-                                    "</div>"+
+                "<tr class='searchres'>"+
+                    "<td>"+
+                        "<div class='row media'>"+
+                            "<div class='col-md-1'>"+
+                                "<a href='#' class='pull-left show-image'>"+
+                                    "<img src='"+ this.fields.img + "' width='64px' class='media-photo albumart' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">"+
+                                    "<button class='hidden-button' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">Play</button>"+
+                                "</a>"+
+                            "</div>"+
+                            "<div class='col-md-11'>"+
+                                "<div class='media-body'>"+
+                                    "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + strinfo + "</span>"+
+                                    "<h4 class='title title-nopad'>"+ 
+                                        "<a onclick=\"recommendTrack(" + "\'" + String(this.fields.uri) + "\'" + ")\" href='#'>"+                               
+                                            this.fields.track +
+                                        '</a>'+
+                                    "</h4>"+
+                                    "<h5>"+
+                                        "<span class='float-right'>"+ this.fields.artist +"</span>"+
+                                    "</h5>"+
+                                    "<p class='summary'>" + this.fields.album + "</p>"+
                                 "</div>"+
                             "</div>"+
-                        "</td>"+
-                    "</tr>"
-                );
+                        "</div>"+
+                    "</td>"+
+                "</tr>"
+            );
 
         });
+
+        if (search.length == 0){
+            $("#observe-list").append(
+
+                "<tr class='searchres'>"+
+                    "<td>"+
+                        "<div class='row media addpad20'>"+
+                            "<div class='col-md-11'>"+
+                                "<div class='media-body'>"+
+                                    "<p class='summary'>Nothing found :(</p>"+
+                                "</div>"+
+                            "</div>"+
+                        "</div>"+
+                    "</td>"+
+                "</tr>"
+            );
+        }
 
     }
     if (itemSelectType == "Location"){
@@ -1421,9 +1523,30 @@ function updateObserve(listdata){
 
         });
 
+        if (htracks.length == 0){
+            $("#observe-list").append(
+
+                "<tr class='searchres'>"+
+                    "<td>"+
+                        "<div class='row media addpad20'>"+
+                            "<div class='col-md-11'>"+
+                                "<div class='media-body'>"+
+                                    "<p class='summary'>Nothing found :(</p>"+
+                                "</div>"+
+                            "</div>"+
+                        "</div>"+
+                    "</td>"+
+                "</tr>"
+            );
+        }
+
     }
     else{
-        console.log("Crap")
+        
+    }
+
+    if(search.length == 0 & artists.length == 0 & genres.length == 0 & playlists.length == 0){
+        
     }
 
 
@@ -1587,6 +1710,22 @@ function updateExplore(listdata){
             );
 
     });
+    if(search.length == 0 & artists.length == 0 & genres.length == 0 & playlists.length == 0){
+        $("#explore-list").append(
+
+            "<tr class='searchres'>"+
+                "<td>"+
+                    "<div class='row media addpad20'>"+
+                        "<div class='col-md-11'>"+
+                            "<div class='media-body'>"+
+                                "<p class='summary'>Nothing found :(</p>"+
+                            "</div>"+
+                        "</div>"+
+                    "</div>"+
+                "</td>"+
+            "</tr>"
+        );
+    }
 
     checkIfLoggedIn(listdata);
 

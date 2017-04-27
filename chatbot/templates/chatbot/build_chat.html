@@ -25,7 +25,7 @@
         </div>
             
     </div>
-    <div class="add-form col-md-12">
+    <form class="add-form col-md-12" action="javascript:AddChat()">
         <div class="row">
             <div class="input-group input-group-lg">
                 <input type="text" name="item" id="item" autofocus class="form-control" placeholder="Chat!" aria-describedby="sizing-addon1" maxlength="160">
@@ -35,7 +35,7 @@
             </div>
         {% csrf_token %}
         </div>
-    </div>
+    </form>
         
 
 {% endblock %}
