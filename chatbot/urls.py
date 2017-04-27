@@ -87,6 +87,7 @@ urlpatterns = [
     url(r'^get-list-json$', views.get_list_json, name='getlistjson'),
     url(r'^get-explore-json$', views.get_explore_json, name='getexplorejson'),
     url(r'^get-observe-json$', views.get_observe_json, name='getobservejson'),
+    url(r'^get-observe-json2$', views.get_observe_json2, name='getobservejson2'),
     url(r'^get-you-json$', views.get_you_json, name='getyoujson'),
     url(r'^get-list-xml$', views.get_list_xml, name='getlistxml'),
     url(r'^get-city-json$', views.get_city_json, name='getcityjson'),

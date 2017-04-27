@@ -12,12 +12,12 @@
     {% endfor %}
     <div class="col-xs-12" style="height: 5px;"></div>
 
-    <form class="add-form col-md-12" action="" method="post">
+    <form class="add-form col-md-12" action="javascript:AddExplore()">
         <div class="row">
             <div class="input-group input-group-lg">
                 {{ postform}}
                 <div class="input-group-btn">
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="SetExploreToDefault();">Hunt By...<span class="caret"></span></button>
+                    <button type="button" id="explore-select" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="SetExploreToDefault();">Hunt By...<span class="caret"></span></button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" onclick="SetExploreToTrack();">Track</a></li>
                         <li><a class="dropdown-item" href="#" onclick="SetExploreToArtist();">Artist</a></li>
@@ -25,7 +25,6 @@
                         <li id="huntforgenre" class="huntforgenre"><a class="dropdown-item" href="#" onclick="SetExploreToGenre();">Genre</a></li>
                     </ul>
                 </div>
-                <span class="input-group-addon" id="basic-addon1-select" name="select">Selection</span>
                 <input type="text" name="item" id="item" autofocus class="form-control" placeholder="Search!" aria-describedby="sizing-addon1" maxlength="160">
                 <span class="input-group-btn">
                     <button class="btn btn-outline-primary" type="button" onclick="AddExplore()">Go!</button>

@@ -19,9 +19,20 @@ function getSearch() {
 }
 
 // Sends a new request to update the search list
-function getObserve() {
+function getObserve(location) {
     $.ajax({
         url: "/chatbot/get-observe-json",
+        dataType : "json",
+        success: updateObserve
+    });
+}
+
+// Sends a new request to update the search list for location based requests
+function getObserve2(location) {
+    $.ajax({
+        url: "/chatbot/get-observe-json2",
+        type: "POST",
+        data: "item="+location+"&csrfmiddlewaretoken="+getCSRFToken(),
         dataType : "json",
         success: updateObserve
     });
@@ -127,33 +138,34 @@ function AddChat(){
 
 // Changing the drop down Selection for explore to Default
 function SetExploreToDefault(){
-    document.getElementById("basic-addon1-select").textContent="Selection";
+    document.getElementById("explore-select").textContent="Hunt By...";
 }
 
 // Changing the drop down Selection for explore to Track
 function SetExploreToTrack(){
-    document.getElementById("basic-addon1-select").textContent="Track";
+    document.getElementById("explore-select").textContent="Track";
 }
 
 // Changing the drop down Selection for explore to Artist
 function SetExploreToArtist(){
-    document.getElementById("basic-addon1-select").textContent="Artist";
+    document.getElementById("explore-select").textContent="Artist";
 }
 
 // Changing the drop down Selection for explore to Genre
 function SetExploreToGenre(){
-    document.getElementById("basic-addon1-select").textContent="Genre";
+    document.getElementById("explore-select").textContent="Genre";
 }
 
 // Changing the drop down Selection for explore to New Music
 function SetExploreToPlaylist(){
-    document.getElementById("basic-addon1-select").textContent="Playlist";
+    document.getElementById("explore-select").textContent="Playlist";
 }
 
 // Changing the drop down Selection for observe to Default
 function SetObserveToDefault(){
     SetParamDefault();
     turnValOff();
+    document.getElementById("observe-text").value = "";
     document.getElementById("observe-text").placeholder = "For searching by tag.";
     document.getElementById("observe-text").disabled = true;
     document.getElementById("observe-select").textContent="Explore by...";
@@ -304,19 +316,49 @@ function AddObserve(){
     itemTextElement.val('');
     displayError('');
 
-    $.ajax({
-        url: "/chatbot/add-observe",
-        type: "POST",
-        data: "item="+itemTextValue+"~"+itemSelectValue+"~"+itemSelectParam+"&csrfmiddlewaretoken="+getCSRFToken(),
-        dataType : "json",
-        success: function(response) {
-            if (Array.isArray(response)) {
-                getObserve();
-            } else {
-                displayError(response.error);
-            }
+    if(itemSelectValue == "Explore by..." & itemSelectParam == "Parameter"){
+        alert("You must select to explore by either location or tag.");
+    }
+    else if(itemSelectValue == "Location" & itemSelectParam == "Parameter"){
+        alert("You must choose a location to explore by location.")
+    }
+    else if(!itemTextValue & itemSelectValue == "Tag"){
+        alert("You must search for a song to explore similar songs!")
+    }
+
+    else {
+
+        if(itemSelectValue == "Location"){
+            $.ajax({
+                url: "/chatbot/add-observe",
+                type: "POST",
+                data: "item="+itemTextValue+"~"+itemSelectValue+"~"+itemSelectParam+"&csrfmiddlewaretoken="+getCSRFToken(),
+                dataType : "json",
+                success: function(response) {
+                    if (Array.isArray(response)) {
+                        getObserve2(itemSelectParam);
+                    } else {
+                        displayError(response.error);
+                    }
+                }
+            });
         }
-    });
+        else if(itemSelectValue == "Tag"){
+            $.ajax({
+                url: "/chatbot/add-observe",
+                type: "POST",
+                data: "item="+itemTextValue+"~"+itemSelectValue+"~"+itemSelectParam+"&csrfmiddlewaretoken="+getCSRFToken(),
+                dataType : "json",
+                success: function(response) {
+                    if (Array.isArray(response)) {
+                        getObserve();
+                    } else {
+                        displayError(response.error);
+                    }
+                }
+            });
+        }
+    }
 }
 
 
@@ -326,26 +368,33 @@ function AddExplore(){
     var itemTextElement = $("#item");
     var itemTextValue   = itemTextElement.val();
 
-    var itemSelectValue = $("#basic-addon1-select").text();
+    var itemSelectValue = $("#explore-select").text();
 
     // Clear input box and old error message (if any)
     itemTextElement.val('');
     displayError('');
 
-    
-    $.ajax({
-        url: "/chatbot/add-explore",
-        type: "POST",
-        data: "item="+itemTextValue+"%"+itemSelectValue+"&csrfmiddlewaretoken="+getCSRFToken(),
-        dataType : "json",
-        success: function(response) {
-            if (Array.isArray(response)) {
-                getSearch();
-            } else {
-                displayError(response.error);
+    if (itemSelectValue == "Hunt By..."){
+        alert("You must choose a selection to hunt by.")
+    }
+    else if (!itemTextValue){
+        alert("You must input something to search by.")
+    }
+    else {
+        $.ajax({
+            url: "/chatbot/add-explore",
+            type: "POST",
+            data: "item="+itemTextValue+"%"+itemSelectValue+"&csrfmiddlewaretoken="+getCSRFToken(),
+            dataType : "json",
+            success: function(response) {
+                if (Array.isArray(response)) {
+                    getSearch();
+                } else {
+                    displayError(response.error);
+                }
             }
-        }
-    });
+        });
+    }
 
 }
 
@@ -372,19 +421,26 @@ function recommendTrack(uri){
     var itemSelectValue = $("#value-select").text();
     var itemSelectParam = $("#param-select").text();
 
-    $.ajax({
-        url: "/chatbot/recommend-track",
-        type: "POST",
-        data: "item="+uri+"~"+itemSelectValue+"~"+itemSelectParam+"&csrfmiddlewaretoken="+getCSRFToken(),
-        dataType : "json",
-        success: function(response) {
-            if (Array.isArray(response)) {
-                getObserve();
-            } else {
-                displayError(response.error);
+    if (itemSelectValue & itemSelectParam){
+        $.ajax({
+            url: "/chatbot/recommend-track",
+            type: "POST",
+            data: "item="+uri+"~"+itemSelectValue+"~"+itemSelectParam+"&csrfmiddlewaretoken="+getCSRFToken(),
+            dataType : "json",
+            success: function(response) {
+                if (Array.isArray(response)) {
+                    getObserve();
+                } else {
+                    displayError(response.error);
+                }
             }
-        }
-    });
+        });
+    }
+    else{
+        alert("You must choose a tag and value to explore songs.")
+    }
+
+    
 }
 
 
@@ -602,7 +658,7 @@ function checkIfLoggedIn(listdata){
         document.getElementById("f-location").selectedIndex= Number(chatter[0].fields.location);
     }    
 
-    console.log(chatter[0].fields.spority_auth)
+    // console.log(chatter[0].fields.spority_auth)
     if (chatter[0].fields.spotify_auth == '0'){
         // console.log("not logged in")
         // Remove hunt by genre from selection list
@@ -1247,115 +1303,129 @@ function updateObserve(listdata){
     htracks = jQuery.parseJSON(listdata["htracks"])
 
     var itemSelectParam = $("#param-select").text();
+    var itemSelectType = $("#observe-select").text();
     var strinfo = '';
+
+    console.log(htracks)
 
     // Removes the old messages
     $(".searchres").remove();
 
-    // Adds each new message item to the list
-    $(search).each(function() {
+    if (itemSelectType == "Tag"){
+    
+        // Adds each new message item to the list
+        $(search).each(function() {
 
-        switch(itemSelectParam){
-            case 'Acousticness':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.acousticness);
-                break;
-            case 'Danceability':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.danceability);
-                break;
-            case 'Energy':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.energy);
-                break;
-            case 'Instrumentalness':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.instrumentalness);
-                break;
-            case 'Key':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.key);
-                break;
-            case 'Liveness':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.liveness);
-                break;
-            case 'Loudness':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.loudness);
-                break;
-            case 'Speechiness':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.speechiness);
-                break;
-            case 'Tempo':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.tempo);
-                break;
-            case 'Time Signature':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.time_signature);
-                break;
-            case 'Valence':
-                strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.valence);
-                break;
-        }
+            switch(itemSelectParam){
+                case 'Acousticness':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.acousticness);
+                    break;
+                case 'Danceability':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.danceability);
+                    break;
+                case 'Energy':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.energy);
+                    break;
+                case 'Instrumentalness':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.instrumentalness);
+                    break;
+                case 'Key':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.key);
+                    break;
+                case 'Liveness':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.liveness);
+                    break;
+                case 'Loudness':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.loudness);
+                    break;
+                case 'Speechiness':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.speechiness);
+                    break;
+                case 'Tempo':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.tempo);
+                    break;
+                case 'Time Signature':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.time_signature);
+                    break;
+                case 'Valence':
+                    strinfo = ' - ' + String(itemSelectParam) + ': ' + String(this.fields.valence);
+                    break;
+            }
 
 
-        $("#observe-list").append(
+            $("#observe-list").append(
 
-                "<tr class='searchres'>"+
-                    "<td>"+
-                        "<div class='row media'>"+
-                            "<div class='col-md-1'>"+
-                                "<a href='#' class='pull-left show-image'>"+
-                                    "<img src='"+ this.fields.img + "' width='64px' class='media-photo albumart' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">"+
-                                    "<button class='hidden-button' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">Play</button>"+
-                                "</a>"+
-                            "</div>"+
-                            "<div class='col-md-11'>"+
-                                "<div class='media-body'>"+
-                                    "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + strinfo + "</span>"+
-                                    "<h4 class='title title-nopad'>"+ 
-                                        "<a onclick=\"recommendTrack(" + "\'" + String(this.fields.uri) + "\'" + ")\" href='#'>"+                               
-                                            this.fields.track +
-                                        '</a>'+
-                                    "</h4>"+
-                                    "<h5>"+
-                                        "<span class='float-right'>"+ this.fields.artist +"</span>"+
-                                    "</h5>"+
-                                    "<p class='summary'>" + this.fields.album + "</p>"+
+                    "<tr class='searchres'>"+
+                        "<td>"+
+                            "<div class='row media'>"+
+                                "<div class='col-md-1'>"+
+                                    "<a href='#' class='pull-left show-image'>"+
+                                        "<img src='"+ this.fields.img + "' width='64px' class='media-photo albumart' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">"+
+                                        "<button class='hidden-button' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">Play</button>"+
+                                    "</a>"+
+                                "</div>"+
+                                "<div class='col-md-11'>"+
+                                    "<div class='media-body'>"+
+                                        "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + strinfo + "</span>"+
+                                        "<h4 class='title title-nopad'>"+ 
+                                            "<a onclick=\"recommendTrack(" + "\'" + String(this.fields.uri) + "\'" + ")\" href='#'>"+                               
+                                                this.fields.track +
+                                            '</a>'+
+                                        "</h4>"+
+                                        "<h5>"+
+                                            "<span class='float-right'>"+ this.fields.artist +"</span>"+
+                                        "</h5>"+
+                                        "<p class='summary'>" + this.fields.album + "</p>"+
+                                    "</div>"+
                                 "</div>"+
                             "</div>"+
-                        "</div>"+
-                    "</td>"+
-                "</tr>"
-            );
+                        "</td>"+
+                    "</tr>"
+                );
 
-    });
+        });
 
-    // Adds each new message item to the list
-    $(htracks).each(function() {
+    }
+    if (itemSelectType == "Location"){
+        
+        // Adds each new message item to the list
+        $(htracks).each(function() {
 
-        $("#observe-list").append(
+            $("#observe-list").append(
 
-                "<tr class='searchres'>"+
-                    "<td>"+
-                        "<div class='row media'>"+
-                            "<div class='col-md-1'>"+
-                                "<a href='#' class='pull-left show-image'>"+
-                                    "<img src='"+ this.fields.img + "' width='64px' class='media-photo albumart' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">"+
-                                    "<button class='hidden-button' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">Play</button>"+
-                                "</a>"+
-                            "</div>"+
-                            "<div class='col-md-11'>"+
-                                "<div class='media-body'>"+
-                                    "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + " - Hits: " + this.fields.duplicates + "</span>"+
-                                    "<h4 class='title title-nopad'>"+                              
-                                            this.fields.track +
-                                    "</h4>"+
-                                    "<h5>"+
-                                        "<span class='float-right'>"+ this.fields.artist +"</span>"+
-                                    "</h5>"+
-                                    "<p class='summary'>" + this.fields.album + "</p>"+
+                    "<tr class='searchres'>"+
+                        "<td>"+
+                            "<div class='row media'>"+
+                                "<div class='col-md-1'>"+
+                                    "<a href='#' class='pull-left show-image'>"+
+                                        "<img src='"+ this.fields.img + "' width='64px' class='media-photo albumart' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">"+
+                                        "<button class='hidden-button' onclick=\"setSong(" + "\'" + String(this.fields.uri) + "\'" + ")\">Play</button>"+
+                                    "</a>"+
+                                "</div>"+
+                                "<div class='col-md-11'>"+
+                                    "<div class='media-body'>"+
+                                        "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + " - Hits: " + this.fields.duplicates + "</span>"+
+                                        "<h4 class='title title-nopad'>"+                              
+                                                this.fields.track +
+                                        "</h4>"+
+                                        "<h5>"+
+                                            "<span class='float-right'>"+ this.fields.artist +"</span>"+
+                                        "</h5>"+
+                                        "<p class='summary'>" + this.fields.album + "</p>"+
+                                    "</div>"+
                                 "</div>"+
                             "</div>"+
-                        "</div>"+
-                    "</td>"+
-                "</tr>"
-            );
+                        "</td>"+
+                    "</tr>"
+                );
 
-    });
+        });
+
+    }
+    else{
+        console.log("Crap")
+    }
+
 
     // Scroll to the top of the scroll-window
     var objDiv = document.getElementById("scroll-window-observe");

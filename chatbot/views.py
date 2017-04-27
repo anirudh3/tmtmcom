@@ -678,6 +678,32 @@ def get_observe_json(request):
 
     return HttpResponse(out, content_type='application/json')
 
+# Action for using Ajax to automatically update search content
+@login_required
+def get_observe_json2(request):
+
+    if not 'item' in request.POST or not request.POST['item']:
+        message = 'You must enter an item to add.'
+        json_error = '{ "error": "'+message+'" }'
+        return HttpResponse(json_error, content_type='application/json')
+
+    searchloc = request.POST['item']
+    locid = ''
+    locdict = dict(locations)
+
+    for i in range(0, 380):
+        if (searchloc == locdict[str(i)].split(',')[0]):
+            locid = str(i)
+
+    guy1 = serializers.serialize('json', SearchRes.objects.filter(user = request.user))
+    guy2 = serializers.serialize('json', Chatters.objects.all())
+    guy4 = serializers.serialize('json', hotTracks.objects.filter(location=locid))
+    guy3 = serializers.serialize('json', Chatters.objects.filter(name = str(request.user.username)))
+    guys = {'search': guy1, 'chatters': guy2, 'chatter': guy3, 'htracks': guy4}
+    out = json.dumps(guys)
+
+    return HttpResponse(out, content_type='application/json')
+
 # Action for using Ajax to automatically update you content
 @login_required
 def get_you_json(request):
