@@ -130,6 +130,7 @@ def respond_chat(request):
 
     print("respond_chat got called")
     global response
+    global inp
 
     # Getting the last context for the concerned user
     last_context = Mess.objects.filter(user = request.user).last().context
@@ -138,7 +139,8 @@ def respond_chat(request):
 
 
     # Sending the message to the bot and fetching a response
-    
+    print("INP------------")
+    print(inp)
     if(last_context == ""):
         response = conversation.message(workspace_id=workspace_id, message_input={
             'text': inp})
@@ -362,6 +364,8 @@ def edit(request):
 # Action for adding a message to the chat.
 @login_required
 def add_chat(request):
+    global inp
+    global response
 
     # # Sending the message to the bot and fetching a response
     # response = conversation.message(workspace_id=workspace_id, message_input={
