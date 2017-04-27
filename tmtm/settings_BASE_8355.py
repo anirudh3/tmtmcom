@@ -26,7 +26,7 @@ SECRET_KEY = '4f4)lg-mto%9o&qc$d(fij2&h9hwu1i#l%ufht&8l44ie%ep3i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://54.202.174.192', 'localhost', '127.0.0.1', '54.202.174.192', 'talkmusictome.com', 'http://138.197.116.179', 'www.talkmusictome.com']
+ALLOWED_HOSTS = ['http://54.191.172.157', 'localhost', '127.0.0.1', 'talkmusictome.com']
 
 
 # Application definition
@@ -80,13 +80,12 @@ WSGI_APPLICATION = 'tmtm.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-        'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'tmtmdb',
-                'USER': 'root',
-                'PASSWORD': '123tmtm123',
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators

@@ -958,6 +958,8 @@ def search_tag(request, searchparam, searchval):
         else:
             imagelink = '../../static/img/egg.png'
 
+	print("Image Link:")
+	print(imagelink)
         new_search = SearchRes(track=item['name'],
                                user = request.user,
                                artist=item['artists'][0]['name'],
