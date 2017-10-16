@@ -33,6 +33,10 @@ from chatbot.models import *
 # Import the Watson Bluemix Conversation API
 from watson_developer_cloud import ConversationV1
 
+# Import the Watson Bluemix NLU API
+from watson_developer_cloud import NaturalLanguageUnderstandingV1
+import watson_developer_cloud.natural_language_understanding.features.v1 as features
+
 # Imports the forms
 from chatbot.forms import *
 
@@ -50,6 +54,9 @@ from django.contrib.auth.tokens import default_token_generator
 
 # Used to send mail from within Django
 from django.core.mail import send_mail
+
+# Helper file call - to idenify the type of action request by chat
+from chatbot_actions import identifier
 
 #Setup Spotipy Account - in terminal
 
@@ -73,6 +80,14 @@ conversation  = ConversationV1(
     password = '5WqmrypF4ePz',
     version='2016-09-20'
 )
+
+nlu = NaturalLanguageUnderstandingV1(
+    version='2017-02-27',
+    username='af5fe526-7cac-47a1-8bc1-98b383bd4741',
+    password='cjQVq54Grkio')
+
+
+
 
 response = "" # Global variable for fetched responses from Watson
 inp = ""
@@ -141,6 +156,11 @@ def respond_chat(request):
     # Sending the message to the bot and fetching a response
     print("INP------------")
     print(inp)
+
+    nlu_response = nlu.analyze(
+        text=inp, features=[features.Entities(), features.Keywords()])
+
+
     if(last_context == ""):
         response = conversation.message(workspace_id=workspace_id, message_input={
             'text': inp})
@@ -148,6 +168,10 @@ def respond_chat(request):
         response = conversation.message(workspace_id=workspace_id, message_input={
             'text': inp}, context = eval(last_context))
 
+    action = identifier(response, nlu_response)
+
+    print("ACTION REQUESTED")
+    print(action)
 
     # CHECK WHAT THE ACTION IS
     # print(type(response['intents']))
@@ -1302,3 +1326,16 @@ def get_track_info(self, tid):
         print(json.dumps(analysis, indent=4))
         print()
     print ("features retrieved in %.2f seconds" % (delta,))
+
+
+
+# Info tab Functions
+
+# Hunt Tab
+def getHuntInfo(request):
+    return render(request, 'chatbot/huntinfo.html', {})
+
+# Explore Tab
+def getExploreInfo(request):
+    print("getExploreInfo called")
+    return render(request, 'chatbot/exploreinfo.html', {})

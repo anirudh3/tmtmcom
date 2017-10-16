@@ -82,7 +82,13 @@ urlpatterns = [
 
     # Route to returning a spotify login
     url(r'^callback$', views.spotify_callback),
-    
+
+    # Route to returning a tab info window
+    url(r'^gethuntinfo$', views.getHuntInfo),
+
+    # Route to returning a tab info window
+    url(r'^getexploreinfo$', views.getExploreInfo),
+
     # JQuery URLS
     url(r'^get-list-json$', views.get_list_json, name='getlistjson'),
     url(r'^get-explore-json$', views.get_explore_json, name='getexplorejson'),

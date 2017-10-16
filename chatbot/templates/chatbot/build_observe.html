@@ -2,8 +2,10 @@
 
 {% block writing %}
 <div class="jumbotron col-lg">
+  <span class = "row">
     <h2 class="display-4">Explore!</h5>
-
+    <button onclick="dispExploreHunt()">info</button>
+  </span>
     {% for error in errors %}
     <div class="col-xs-12" style="height:10px;"></div>
     <div class="error col-md-12">
@@ -59,8 +61,6 @@
             </table>
         </div>
     </div>
-    
-        
+
+
 {% endblock %}
-
-

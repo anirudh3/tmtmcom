@@ -87,7 +87,7 @@ function resize(){
     $(this).css('width', $(this).parent().css('width'));
     $(this).attr('src', $(this).attr('src'));
     $(this).removeClass('loaded');
-    
+
     $(this).on('load', function(){
       $(this).addClass('loaded');
     });
@@ -134,6 +134,20 @@ function AddChat(){
         }
     });
 
+}
+
+// Displaying the info about tabs in new windows
+function dispInfoHunt(){
+    // print("displayInfoHunt called")
+    huntinfoURL = '/chatbot/gethuntinfo'
+    window.open(huntinfoURL,'Hunt Tab Info','height=500,width=400');
+}
+
+function dispExploreHunt(){
+    // print("yaya")
+
+    exploreinfoURL = '/chatbot/getexploreinfo'
+    window.open(exploreinfoURL,'Explore Tab Info','height=700,width=400');
 }
 
 // Changing the drop down Selection for explore to Default
@@ -186,7 +200,7 @@ function SetObserveToLocation(){
 function SetObserveToTag(){
     SetParamTag()
     turnValOn();
-    $(".searchres").remove();  
+    $(".searchres").remove();
     document.getElementById("observe-text").placeholder = "Search for tracks similar to...";
     document.getElementById("observe-text").disabled = false;
     document.getElementById("observe-select").textContent="Tag";
@@ -198,7 +212,7 @@ function SetValToDefault(){
     if (elementExists){
         document.getElementById("value-select").textContent="Value";
     }
-    
+
 }
 
 // Changing the drop down value selection for observe
@@ -266,7 +280,7 @@ function SetParamDefault(){
 }
 
 
-// Populating the parameter selection drop down to Tags 
+// Populating the parameter selection drop down to Tags
 function SetParamTag(){
     // Removes the old messages
     $(".paramenu").remove();
@@ -525,7 +539,7 @@ function recommendTrack(uri){
         });
     }
 
-    
+
 }
 
 
@@ -609,7 +623,7 @@ function updateList(listdata){
     $(mess).each(function() {
         var chatter_name = chatter[0].fields.name
         if(this.fields.reality_coefficient) {
-        
+
             $("#chat-list").append(
 
                 "<div class='media chatmess'>"+
@@ -627,7 +641,7 @@ function updateList(listdata){
         }
 
         else {
-        
+
             $("#chat-list").append(
 
                 "<div class='media chatmess'>"+
@@ -727,7 +741,7 @@ function checkIfLoggedIn(listdata){
     var elementExists = document.getElementById("f-location");
     if (elementExists){
         document.getElementById("f-location").selectedIndex= Number(chatter[0].fields.location);
-    }    
+    }
 
     // console.log(chatter[0].fields.spority_auth)
     if (chatter[0].fields.spotify_auth == '0'){
@@ -737,7 +751,7 @@ function checkIfLoggedIn(listdata){
         if (elementExists){
             $(".huntforgenre").remove();
         }
-        
+
         // Dissalow clicking on playlists
         elementArray = document.getElementsByClassName("playlistscript");
 
@@ -746,7 +760,7 @@ function checkIfLoggedIn(listdata){
             {
                 // PERFORM STUFF ON THE ELEMENT
                 elementArray[i].onclick = function(){SpotifyAlert};
-            } 
+            }
         }
 
 
@@ -952,7 +966,7 @@ function updateYou(listdata){
                         "<div class='col-md-11'>"+
                             "<div class='media-body'>"+
                                 "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + "</span>"+
-                                "<h4 class='title title-nopad'>"+                                
+                                "<h4 class='title title-nopad'>"+
                                     this.fields.track +
                                 "</h4>"+
                                 "<h5>"+
@@ -1347,8 +1361,6 @@ function updateYou(listdata){
         objDiv.scrollTop = 0;
     }
 
-
-
 }
 
 // Updating the list of search results in the observe Tab
@@ -1366,7 +1378,7 @@ function updateObserve(listdata){
     $(".searchres").remove();
 
     if (itemSelectType == "Tag"){
-    
+
         // Adds each new message item to the list
         $(search).each(function() {
 
@@ -1421,8 +1433,8 @@ function updateObserve(listdata){
                             "<div class='col-md-11'>"+
                                 "<div class='media-body'>"+
                                     "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + strinfo + "</span>"+
-                                    "<h4 class='title title-nopad'>"+ 
-                                        "<a onclick=\"recommendTrack(" + "\'" + String(this.fields.uri) + "\'" + ")\" href='#'>"+                               
+                                    "<h4 class='title title-nopad'>"+
+                                        "<a onclick=\"recommendTrack(" + "\'" + String(this.fields.uri) + "\'" + ")\" href='#'>"+
                                             this.fields.track +
                                         '</a>'+
                                     "</h4>"+
@@ -1458,7 +1470,7 @@ function updateObserve(listdata){
 
     }
     if (itemSelectType == "Location"){
-        
+
         // Adds each new message item to the list
         $(htracks).each(function() {
 
@@ -1476,7 +1488,7 @@ function updateObserve(listdata){
                                 "<div class='col-md-11'>"+
                                     "<div class='media-body'>"+
                                         "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + " - Hits: " + this.fields.duplicates + "</span>"+
-                                        "<h4 class='title title-nopad'>"+                              
+                                        "<h4 class='title title-nopad'>"+
                                                 this.fields.track +
                                         "</h4>"+
                                         "<h5>"+
@@ -1511,11 +1523,11 @@ function updateObserve(listdata){
 
     }
     else{
-        
+
     }
 
     if(search.length == 0 & artists.length == 0 & genres.length == 0 & playlists.length == 0){
-        
+
     }
 
 
@@ -1529,7 +1541,7 @@ function updateObserve(listdata){
 
 // Updating the list of search results in the explore Tab
 function updateExplore(listdata){
-    
+
     search = jQuery.parseJSON(listdata["search"]);
     artists = jQuery.parseJSON(listdata["search_artist"]);
     genres = jQuery.parseJSON(listdata["search_genre"]);
@@ -1554,7 +1566,7 @@ function updateExplore(listdata){
                             "<div class='col-md-11'>"+
                                 "<div class='media-body'>"+
                                     "<span class='media-meta pull-right'>Popularity: " + this.fields.popularity + "</span>"+
-                                    "<h4 class='title title-nopad'>"+                                
+                                    "<h4 class='title title-nopad'>"+
                                         this.fields.track +
                                     "</h4>"+
                                     "<h5>"+
@@ -1713,7 +1725,7 @@ $(window).on('load resize', function() {
     $(this).css('width', $(this).parent().css('width'));
     $(this).attr('src', $(this).attr('src'));
     $(this).removeClass('loaded');
-    
+
     $(this).on('load', function(){
       $(this).addClass('loaded');
     });
@@ -1733,18 +1745,15 @@ $(window).on('load', function() {
             if (event.keyCode == 13) {
                 document.getElementById("item").click();
             }
-        }); 
+        });
     }
 
     var elementExists = document.getElementById("settings");
     if (elementExists){
         window.setInterval(getYou, 2000);
     }
-    
+
 
 // causes list to be re-fetched every 5 seconds
 // window.setInterval(getList, 5000);
 });
-
-
-
